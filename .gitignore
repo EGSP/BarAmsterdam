@@ -51,8 +51,6 @@ ExportedObj/
 *.pdb.meta
 *.mdb.meta
 
-*.png
-*.png.meta
 *.meta
 *.unity
 
