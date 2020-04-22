@@ -8,6 +8,9 @@ namespace Player
 {
     public class PlayerController : MonoBehaviour
     {
+        private float scale;
+        private SpriteRenderer render;
+
         /// <summary>
         /// Радиус обработки столкновений
         /// </summary>
@@ -56,6 +59,7 @@ namespace Player
 
         private void Awake()
         {
+            render = GetComponent<SpriteRenderer>();
             updateData = new UpdateData();
             SetState(new BaseState(this));
         }
@@ -63,6 +67,13 @@ namespace Player
         // Update is called once per frame
         void Update()
         {
+            // Order 
+            render.sortingOrder = (int)(-transform.position.y * 2);
+            
+            // Scale
+            scale = 1 - transform.position.y * 0.2f;
+            transform.localScale = new Vector3(scale, scale, 1);
+            
             updateData.deltaTime = Time.deltaTime;
             CurrentPlayerState = CurrentPlayerState.UpdateState(updateData);
         }
@@ -75,7 +86,7 @@ namespace Player
         public void Move(int horizontalInput, int verticalInput)
         {
             var horizontalDir = horizontalInput * transform.right * MoveStep;
-            var verticalDir = verticalInput * transform.up * MoveStep;
+            var verticalDir = verticalInput * transform.up * MoveStep / 2;
 
             Vector3 newPosition = transform.position;
 
@@ -207,7 +218,22 @@ namespace Player
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position, transform.position + transform.right * MoveStep);
+            Gizmos.DrawLine(transform.position - transform.right * MoveStep, transform.position + transform.right * MoveStep);
+            Gizmos.DrawLine(transform.position - transform.right * MoveStep, transform.position + transform.right * MoveStep);
+            Gizmos.DrawLine(transform.position - transform.up * MoveStep/2, transform.position + transform.up * MoveStep/2);
+        }
+
+        public string TakeItem(Interior interior)
+        {
+            var item = interior.gameObject.transform.GetChild(0);
+            item.parent = transform;
+            return item.name;
+        }
+        public string PutItem(Interior interior)
+        {
+            var item = transform.GetChild(0);
+            item.parent = interior.gameObject.transform;
+            return "Nothing";
         }
     }
 }

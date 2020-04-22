@@ -9,6 +9,11 @@ public static class DeviceInput
     /// </summary>
     private static DeviceMapping map;
 
+    public static bool isZBtnDown()
+    {
+        return Input.GetKeyDown(map.Zbutton);
+    }
+
     /// <summary>
     /// Получение значений ввода удерживания по горизонтальной оси от -1 до 1
     /// </summary>
