@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using Player.PlayerStates;
+using Interiors;
 
 namespace Player
 {
     public class PlayerController : MonoBehaviour
     {
-        private float scale;
-        private SpriteRenderer render;
-
         /// <summary>
         /// Радиус обработки столкновений
         /// </summary>
@@ -36,6 +34,12 @@ namespace Player
         [SerializeField] private float moveStep;
 
         /// <summary>
+        /// Множитель велечины шага передвижения по вертикали
+        /// </summary>
+        public float VerticalStepModifier { get => verticalStepModifier; }
+        [Range(0,1)][SerializeField] private float verticalStepModifier;
+
+        /// <summary>
         /// Инвертированное время используемое для передвижения
         /// </summary>
         private float InversedMoveTime { get => 1 / MoveTime; }
@@ -57,9 +61,16 @@ namespace Player
         /// </summary>
         private UpdateData updateData;
 
+        /// <summary>
+        /// Ориентация игрока (направление взгляда)
+        /// </summary>
+        public Vector3 Orientation { get => orientation; private set => orientation = value.normalized; }
+        private Vector3 orientation = Vector3.right;
+
         private void Awake()
         {
-            render = GetComponent<SpriteRenderer>();
+            Orientation = Vector3.right;
+
             updateData = new UpdateData();
             SetState(new BaseState(this));
         }
@@ -67,13 +78,6 @@ namespace Player
         // Update is called once per frame
         void Update()
         {
-            // Order 
-            render.sortingOrder = (int)(-transform.position.y * 2);
-            
-            // Scale
-            scale = 1 - transform.position.y * 0.2f;
-            transform.localScale = new Vector3(scale, scale, 1);
-            
             updateData.deltaTime = Time.deltaTime;
             CurrentPlayerState = CurrentPlayerState.UpdateState(updateData);
         }
@@ -86,26 +90,35 @@ namespace Player
         public void Move(int horizontalInput, int verticalInput)
         {
             var horizontalDir = horizontalInput * transform.right * MoveStep;
-            var verticalDir = verticalInput * transform.up * MoveStep / 2;
+            var verticalDir = verticalInput * transform.up * MoveStep * VerticalStepModifier;
 
             Vector3 newPosition = transform.position;
 
-            bool horObstacleExist = CheckObstacleByLinecast(transform.position + horizontalDir);
-            bool verObstacleExist = CheckObstacleByLinecast(transform.position + verticalDir);
+            int horObstacleExist = CheckObstacleByLinecast(transform.position + horizontalDir) == true ? 1 : 0;
+            int verObstacleExist = CheckObstacleByLinecast(transform.position + verticalDir) == true ? 1 : 0;
 
-
+            
             // Если не можем никуда пойти (true)
-            if (horObstacleExist && verObstacleExist)
+            if (horObstacleExist == 1 && verObstacleExist == 1)
+            {
+                // Смена ориентации
+                ChangeOrientation(horizontalInput, verticalInput);
                 return;
+            }
 
+            
             // Если можем идти по диагонали. Нет препятствий по бокам
-            if (horObstacleExist == false && verObstacleExist == false)
+            if (horObstacleExist == 0 && verObstacleExist == 0 && (Mathf.Abs(horizontalInput) + Mathf.Abs(verticalInput)) == 2)
             {
                 bool diaObstacleExist = CheckObstacleByLinecast(transform.position + horizontalDir + verticalDir);
 
                 // Если в точке по диагонали нет препятствий
                 if (diaObstacleExist == false)
                 {
+                    //// Смена ориентации
+                    //ChangeOrientation(horizontalInput, verticalInput);
+                    ChangeOrientation(horizontalInput, 0);
+
                     newPosition += horizontalDir;
                     newPosition += verticalDir;
 
@@ -121,15 +134,44 @@ namespace Player
                 }
             }
 
+            // Учитываем препятствия
+            horizontalInput *= (1 - horObstacleExist);
+            verticalInput *= (1 - verObstacleExist);
+
+            // Смена ориентации
+            ChangeOrientation(horizontalInput, verticalInput);
+
             // Одно из направлений нулевое, но это не страшно
-            newPosition += horizontalDir * (horObstacleExist == false ? 1 : 0);
-            newPosition += verticalDir * (verObstacleExist == false ? 1 : 0);
+            newPosition += horizontalDir * (1 - horObstacleExist);
+            newPosition += verticalDir * (1 - verObstacleExist);
 
             // Сокращаем время поиска нужной корутины
             // При перезначении старая корутина все еще может существовать, пока не доделает свою работу 
             movementRoutine = Movement(newPosition);
             StartCoroutine(movementRoutine);
+        }
 
+        /// <summary>
+        /// Смена ориентации, направления взгляда, игрока. Проверки на ноль есть.
+        /// </summary>
+        /// <param name="horizontal">Направление по горизонтали</param>
+        /// <param name="vertical">Направление по вертикали</param>
+        public void ChangeOrientation(int horizontal,int vertical)
+        {
+            // Если только одно из направлений действительно
+            if ((Mathf.Abs(horizontal) + Mathf.Abs(vertical)) == 1)
+            {
+                Orientation = new Vector3(horizontal, vertical);
+            }
+            else
+            {
+                // Здесь оба могут быть нулевыми
+                if (horizontal != 0)
+                    Orientation = new Vector3(horizontal, Orientation.y);
+
+                if (vertical != 0)
+                    Orientation = new Vector3(Orientation.x, vertical);
+            }
         }
 
         /// <summary>
@@ -156,6 +198,18 @@ namespace Player
 
             IsMoving = false;
         }
+
+
+
+
+
+
+
+
+
+
+
+
 
         /// <summary>
         /// Проверка препятствий с помощью луча в конечную позицию
@@ -217,18 +271,27 @@ namespace Player
 
         private void OnDrawGizmosSelected()
         {
+            // Отрисовка величины шага
             Gizmos.color = Color.red;
             Gizmos.DrawLine(transform.position - transform.right * MoveStep, transform.position + transform.right * MoveStep);
-            Gizmos.DrawLine(transform.position - transform.right * MoveStep, transform.position + transform.right * MoveStep);
-            Gizmos.DrawLine(transform.position - transform.up * MoveStep/2, transform.position + transform.up * MoveStep/2);
+            Gizmos.DrawLine(
+                transform.position - transform.up * MoveStep * VerticalStepModifier, 
+                transform.position + transform.up * MoveStep * VerticalStepModifier);
+
+            // Направление взгляда
+            Gizmos.color = Color.blue;
+            Gizmos.DrawLine(transform.position, transform.position + Orientation);
+
         }
 
+        // TODO: Переписать на более эффективную систему после реализации нескольких предметов
         public string TakeItem(Interior interior)
         {
             var item = interior.gameObject.transform.GetChild(0);
             item.parent = transform;
             return item.name;
         }
+
         public string PutItem(Interior interior)
         {
             var item = transform.GetChild(0);

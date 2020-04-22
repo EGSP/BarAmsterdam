@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Box : Interior
+namespace Interiors
 {
-    
+    public class Box : Interior
+    {
+
+    }
 }

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+using Core;
+using Interiors;
+
 namespace Player.PlayerStates
 {
     public abstract class PlayerState : IDisposable
@@ -43,13 +46,6 @@ namespace Player.PlayerStates
     /// </summary>
     public class BaseState : PlayerState
     {
-        //Указывает куда смотрит игрок
-        public int lastVer = 0;
-        public int lastHor = 0;
-        
-        
-        public string itemInHand = "Nothing";
-        
         public BaseState(PlayerController player) : base(player)
         {
 
@@ -63,33 +59,6 @@ namespace Player.PlayerStates
 
         public override PlayerState UpdateState(UpdateData updateData)
         {
-            Debug.Log(itemInHand);
-            
-            if (DeviceInput.isZBtnDown())
-            {
-                var pos = Vector3.zero;
-                if (lastHor != 0)
-                {
-                    pos = Player.transform.position + Player.transform.right * Player.MoveStep * lastHor;
-                    // Ищем объект перед нами
-                    var interior = Player.GetComponentByLinecast<Interior>(pos);
-                    if (itemInHand == "Nothing")
-                        itemInHand = Player.TakeItem(interior);
-                    else
-                        itemInHand = Player.PutItem(interior);
-                }
-                else if (lastVer != 0)
-                {
-                    pos = Player.transform.position + Player.transform.up * Player.MoveStep * lastVer;
-                    // Ищем объект перед нами
-                    var interior = Player.GetComponentByLinecast<Interior>(pos);
-                    if (itemInHand == "Nothing")
-                        itemInHand = Player.TakeItem(interior);
-                    else
-                        itemInHand = Player.PutItem(interior);
-                }
-                
-            }
                 
             // Нажатие и удерживание могут совпадать (особенность движка)
             // Нажатие на кнопку
@@ -99,7 +68,15 @@ namespace Player.PlayerStates
             // Удерживание кнопки
             var hor = (int)DeviceInput.GetHorizontalAxis();
             var ver = (int)DeviceInput.GetVerticalAxis();
+
             
+
+            if (DeviceInput.GetHandleButtonDown())
+            {
+                var pos = Vector3.zero;
+
+                // Добавить ориентацию в игрока и по ней лайнкастить
+            }
 
             // Если движемся или двигались только в одну сторону или только нажали
             if ((Mathf.Abs(hor) + Mathf.Abs(ver)) == 1)
@@ -111,29 +88,36 @@ namespace Player.PlayerStates
                     // Это означает первое нажатие
                     if(hor == horDown)
                     {
-                        pos =Player.transform.position + Player.transform.right * Player.MoveStep * horDown;
+                        //Player.ChangeOrientation(hor, ver);
+
+                        pos = Player.transform.position + Player.transform.right * Player.MoveStep * horDown;
                         // Ищем объект перед нами
                         var interior = Player.GetComponentByLinecast<Interior>(pos);
                         if (interior != null)
                         {
-                            // TODO Вообще весь следующий блок должен работать только если interior == Table
-                            // Нужно чтобы вызывался метод у наследников Interior. Так как в случае стула у нас pos
+                            #region TableAvoidance
+                            //TODO Вообще весь следующий блок должен работать только если interior == Table
+                            // Нужно чтобы вызывался метод у наследников Interior.Так как в случае стула у нас pos
                             // будет равный стулу, разные анимации, вобщем поведение зависит от реализации. 
-                            
-                            // Если не лицом к столу - разверуться
-                            if (lastHor != hor)
-                            {
-                                lastHor = hor;
-                                lastVer = ver;
-                                return this;
-                            }
-                            // Иначе обойти стол
-                            Debug.Log(interior);
-                            
-                            var tmp = hor;
-                            hor = ver;
-                            ver = tmp;
 
+                            // -> Этот обход стола вообще непонятно зачем существует, ошибка геймдизайна игры
+                            // -> Георгий сказал, что пока не нужно (22.04.2020)
+
+                            // Если не лицом к столу - разверуться
+                            //if (lastHor != hor)
+                            //{
+                            //    lastHor = hor;
+                            //    lastVer = ver;
+                            //    return this;
+                            //}
+                            //Иначе обойти стол
+                            //Debug.Log(interior);
+
+                            //var tmp = hor;
+                            //hor = ver;
+                            //ver = tmp;
+                            #endregion
+                            return this;
                         }
                     }
                 }
@@ -142,24 +126,14 @@ namespace Player.PlayerStates
                     // Это означает первое нажатие
                     if (ver == verDown)
                     {
+                        //Player.ChangeOrientation(hor, ver);
+
                         pos = Player.transform.position + Player.transform.up * Player.MoveStep * verDown;
                         // Ищем объект перед нами
                         var interior = Player.GetComponentByLinecast<Interior>(pos);
                         if (interior != null)
                         {
-                            // Если не лицом к столу - разверуться
-                            if (lastVer != ver)
-                            {
-                                lastHor = hor;
-                                lastVer = ver;
-                                return this;
-                            }
-                            // Иначе обойти стол
-                            Debug.Log(interior);
-                            var tmp = hor;
-                            hor = ver;
-                            ver = tmp;
-
+                            return this;
                         }
                     }
                 }
@@ -168,12 +142,8 @@ namespace Player.PlayerStates
             // Если персонаж должен сдвинутся и он стоит на месте
             if ((hor != 0 || ver != 0) && Player.IsMoving == false)
             {
-                lastHor = hor;
-                lastVer = ver;
-                
                 Player.Move(hor, ver);
             }
-                
 
             return this;
         }
