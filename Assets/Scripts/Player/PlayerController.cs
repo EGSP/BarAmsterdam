@@ -10,12 +10,6 @@ namespace Player
     public class PlayerController : MonoBehaviour
     {
         /// <summary>
-        /// Радиус обработки столкновений
-        /// </summary>
-        public float CollisionRadius { get => collisionRadius; }
-        [Header("Collision")] [SerializeField] private float collisionRadius;
-
-        /// <summary>
         /// Маска объектов, с которыми будет обработка столкновений
         /// </summary>
         public LayerMask CollisionMask { get => collisionMask; }
@@ -268,22 +262,7 @@ namespace Player
                 CurrentPlayerState = playerState;
             }
         }
-
-        private void OnDrawGizmosSelected()
-        {
-            // Отрисовка величины шага
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position - transform.right * MoveStep, transform.position + transform.right * MoveStep);
-            Gizmos.DrawLine(
-                transform.position - transform.up * MoveStep * VerticalStepModifier, 
-                transform.position + transform.up * MoveStep * VerticalStepModifier);
-
-            // Направление взгляда
-            Gizmos.color = Color.blue;
-            Gizmos.DrawLine(transform.position, transform.position + Orientation);
-
-        }
-
+        
         // TODO: Переписать на более эффективную систему после реализации нескольких предметов
         public string TakeItem(Interior interior)
         {
@@ -297,6 +276,20 @@ namespace Player
             var item = transform.GetChild(0);
             item.parent = interior.gameObject.transform;
             return "Nothing";
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            // Отрисовка величины шага
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(transform.position - transform.right * MoveStep, transform.position + transform.right * MoveStep);
+            Gizmos.DrawLine(
+                transform.position - transform.up * MoveStep * VerticalStepModifier,
+                transform.position + transform.up * MoveStep * VerticalStepModifier);
+
+            // Направление взгляда
+            Gizmos.color = Color.blue;
+            Gizmos.DrawLine(transform.position, transform.position + Orientation);
         }
     }
 }

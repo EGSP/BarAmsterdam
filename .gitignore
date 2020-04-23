@@ -11,6 +11,7 @@
 /[Mm]emoryCaptures/
 /ProjectSettings
 /Scenes
+/Packages/
 
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
@@ -63,4 +64,5 @@ sysinfo.txt
 
 # Crashlytics generated file
 crashlytics-build.properties
+
 
