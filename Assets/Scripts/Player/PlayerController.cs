@@ -46,23 +46,6 @@ namespace Player.Controllers
         private float InversedMoveTime { get => 1 / MoveTime; }
 
         /// <summary>
-        /// Перемещается ли в данный момент персонаж
-        /// </summary>
-        public bool IsMoving { get; private set; }
-
-        private IEnumerator movementRoutine;
-
-        /// <summary>
-        /// Текущее поведение персонажа
-        /// </summary>
-        private PlayerState CurrentPlayerState;
-
-        /// <summary>
-        /// Кешируем данные обновления, чтобы не пересоздавать каждый кадр
-        /// </summary>
-        private UpdateData updateData;
-
-        /// <summary>
         /// Ориентация игрока (направление взгляда)
         /// </summary>
         public Vector3 Orientation { get => orientation; private set => orientation = value.normalized; }
@@ -80,6 +63,27 @@ namespace Player.Controllers
                 return orient;
             }
         }
+
+        /// <summary>
+        /// Перемещается ли в данный момент персонаж
+        /// </summary>
+        public bool IsMoving { get; private set; }
+
+
+        private IEnumerator movementRoutine;
+        private Vector3 movementEndPosition = Vector3.zero;
+
+        /// <summary>
+        /// Текущее поведение персонажа
+        /// </summary>
+        private PlayerState CurrentPlayerState;
+
+        /// <summary>
+        /// Кешируем данные обновления, чтобы не пересоздавать каждый кадр
+        /// </summary>
+        private UpdateData updateData;
+
+        
 
         private void Awake()
         {
@@ -201,6 +205,7 @@ namespace Player.Controllers
             var sqrMagnitude = (transform.position - newPosition).sqrMagnitude;
 
             IsMoving = true;
+            movementEndPosition = newPosition;
 
             // Пока расстояние больше очень малого значения близкого к нулю
             while (sqrMagnitude > float.Epsilon)
@@ -216,7 +221,15 @@ namespace Player.Controllers
             IsMoving = false;
         }
 
+        /// <summary>
+        /// Останавливает движение и моментально телепортирует игрока в конечную точку
+        /// </summary>
+        public void StopMovement()
+        {
+            StopCoroutine(movementRoutine);
 
+            transform.position = movementEndPosition;
+        }
 
 
 
