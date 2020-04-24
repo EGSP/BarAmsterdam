@@ -5,18 +5,28 @@ using System.Linq;
 
 
 using Items;
+using Items.MonoItems;
+using Player.PlayerCursors;
+using System;
+
+
 /// <summary>
 /// Класс стола, который может хранить в себе предметы
 /// </summary>
-public class Table : MonoBehaviour
+public class TableTop : MonoBehaviour, ICursorEnumerable
 {
     /// <summary>
     /// Места для предметов
     /// </summary>
     [SerializeField] private List<ItemPlace> places;
-    
 
-    
+    /// <summary>
+    /// Вызывается при изменении коллекции
+    /// </summary>
+    public event Action OnCollectionChanged = delegate { };
+
+
+
 
     /// <summary>
     /// Добавляет предмет на стол в любую свободную ячейку
@@ -29,8 +39,10 @@ public class Table : MonoBehaviour
         // Если нашли свободное место
         if(freePlace != null)
         {
-            freePlace.AddItem(item);
+            freePlace.PlaceItem(item);
         }
+
+        OnCollectionChanged();
     }
 
     /// <summary>
@@ -46,8 +58,10 @@ public class Table : MonoBehaviour
         {
             var place = freePlaces.OrderBy(x => (x.Position - initiatorPosition).sqrMagnitude);
 
-            place.First().AddItem(item);
+            place.First().PlaceItem(item);
         }
+
+        OnCollectionChanged();
     }
 
     /// <summary>
@@ -100,71 +114,30 @@ public class Table : MonoBehaviour
         return new NullItem();
     }
 
-}
-
-/// <summary>
-/// Место для установки предмета
-/// </summary>
-public class ItemPlace : MonoBehaviour
-{
     /// <summary>
-    /// Текущий предмет
+    /// Получение коллекции текущих предметов
     /// </summary>
-    public IItem CurrentItem
+    /// <returns></returns>
+    public List<MonoItem> GetCollection()
     {
-        get
-        {
-            if (currentItem == null)
-                return new NullItem();
+        var list = places
+            .Select(x => x.CurrentItem)
+            .Where(x => x as MonoItem != null)
+            .Cast<MonoItem>()
+            .ToList();
 
-            return currentItem;
-        }
-        set
-        {
-            if(value == null)
-            {
-                currentItem = new NullItem();  
-            }
-
-            currentItem = value;
-        }
-    }
-    [SerializeField] private IItem currentItem;
-
-    /// <summary>
-    /// Позиция в мировом пространстве
-    /// </summary>
-    public Vector3 Position { get => transform.position; }
-
-    public void AddItem(IItem item)
-    {
-        var monoItem = item as MonoItem;
-
-        // Если это предмет наследованный от MonoBehaviour
-        if(monoItem != null)
-        {
-            monoItem.transform.parent = transform;
-            monoItem.transform.position = Position;
-            CurrentItem = monoItem;
-        }
-        else
-        {
-            CurrentItem = item;
-        }
+        return list;
     }
 
-    public IItem RemoveItem()
+
+    private void OnDrawGizmos()
     {
-        var item = CurrentItem;
-        var monoItem = item as MonoItem;
-
-        // Если это предмет наследованный от MonoBehaviour
-        if (monoItem != null)
+        for(int i = 0; i < places.Count; i++)
         {
-            monoItem.transform.parent = null;
-        }
+            var place = places[i];
 
-        CurrentItem = null;
-        return item;
+            if (place != null)
+                Gizmos.DrawIcon(place.transform.position, "ItemPlaceIcon",true);
+        }
     }
 }

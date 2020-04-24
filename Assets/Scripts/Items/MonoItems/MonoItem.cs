@@ -1,11 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-using Player;
 using Player.PlayerStates;
+using Player.Controllers;
 
-namespace Items
+namespace Items.MonoItems
 {
     /// <summary>
     /// Класс предмета
@@ -23,29 +22,5 @@ namespace Items
         /// Получение нового состояния для игрока, требуемое этим интерьером
         /// </summary>
         public abstract PlayerState GetPlayerState(PlayerController playerController);
-    }
-
-    /// <summary>
-    /// Нулевой объект, возвращающий базовое состояние
-    /// </summary>
-    public class NullItem : IItem
-    {
-        public string ID => "NullItem";
-
-        public PlayerState GetPlayerState(PlayerController playerController)
-        {
-            return new BaseState(playerController);
-        }
-    }
-
-    /// <summary>
-    /// Интерфейс определяющий предмет
-    /// </summary>
-    public interface IItem : IPlayerStateChanger
-    {
-        /// <summary>
-        /// Идентификатор предмета
-        /// </summary>
-        string ID { get; }
     }
 }

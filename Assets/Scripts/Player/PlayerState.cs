@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System;
 
+using Player.Controllers;
+
 namespace Player.PlayerStates
 {
     public abstract class PlayerState : IDisposable

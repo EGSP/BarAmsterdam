@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using Player.PlayerStates;
+using Player.PlayerCursors;
 using Interiors;
 
-namespace Player
+namespace Player.Controllers
 {
     public class PlayerController : MonoBehaviour
     {
@@ -32,6 +33,12 @@ namespace Player
         /// </summary>
         public float VerticalStepModifier { get => verticalStepModifier; }
         [Range(0,1)][SerializeField] private float verticalStepModifier;
+
+        /// <summary>
+        /// Настольный курсор для предметов
+        /// </summary>
+        public TableTopCursor TableCursor { get => tableCursor; }
+        [Header("Additional components")] [SerializeField] private TableTopCursor tableCursor;
 
         /// <summary>
         /// Инвертированное время используемое для передвижения
@@ -61,8 +68,24 @@ namespace Player
         public Vector3 Orientation { get => orientation; private set => orientation = value.normalized; }
         private Vector3 orientation = Vector3.right;
 
+        /// <summary>
+        /// Ориентация игрока учитываяющая модификатор шага
+        /// </summary>
+        public Vector3 ModifiedOrientation
+        {
+            get
+            {
+                var orient = Orientation;
+                orient.y *= verticalStepModifier;
+                return orient;
+            }
+        }
+
         private void Awake()
         {
+            if (TableCursor == null)
+                throw new System.Exception("TableCursor is null in PlayerController.cs");
+
             Orientation = Vector3.right;
 
             updateData = new UpdateData();
@@ -226,7 +249,7 @@ namespace Player
         /// <typeparam name="T">Искомый компонент</typeparam>
         /// <param name="endPosition">Конечная позиция луча</param>
         /// <returns></returns>
-        public T GetComponentByLinecast<T>(Vector3 endPosition) where T : Component
+        public T GetComponentByLinecast<T>(Vector3 endPosition) where T:class
         {
             var hit = Physics2D.Linecast(transform.position, endPosition, CollisionMask);
 

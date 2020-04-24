@@ -4,6 +4,7 @@ using UnityEngine;
 
 using Player;
 using Player.PlayerStates;
+using Player.Controllers;
 
 namespace Interiors
 {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Player;
 using Player.PlayerStates;
+using Player.Controllers;
 using UnityEngine;
 
 namespace Interiors
