@@ -41,6 +41,18 @@ namespace Player.Controllers
         [Header("Additional components")] [SerializeField] private TableTopCursor tableCursor;
 
         /// <summary>
+        /// Аниматор используемый контроллером
+        /// </summary>
+        public Animator Animator { get => animator; private set => animator = value; }
+        [SerializeField] private Animator animator;
+
+        /// <summary>
+        /// Компонент используемый для отрисовки спрайтов 
+        /// </summary>
+        public SpriteRenderer SpriteRenderer { get => spriteRenderer; private set => spriteRenderer = value; }
+        [SerializeField] private SpriteRenderer spriteRenderer;
+
+        /// <summary>
         /// Инвертированное время используемое для передвижения
         /// </summary>
         private float InversedMoveTime { get => 1 / MoveTime; }
@@ -68,8 +80,7 @@ namespace Player.Controllers
         /// Перемещается ли в данный момент персонаж
         /// </summary>
         public bool IsMoving { get; private set; }
-
-
+        
         private IEnumerator movementRoutine;
         private Vector3 movementEndPosition = Vector3.zero;
 
@@ -83,18 +94,17 @@ namespace Player.Controllers
         /// </summary>
         private UpdateData updateData;
         
-        public Animator animator;
-        public SpriteRenderer rend;
-
         
-
         private void Awake()
         {
-            animator = GetComponent<Animator>();
-            rend = GetComponent<SpriteRenderer>();
+            if (Animator == null)
+                Animator = GetComponent<Animator>();
+
+            if (SpriteRenderer == null)
+                SpriteRenderer = GetComponent<SpriteRenderer>();
                 
             if (TableCursor == null)
-                throw new System.Exception("TableCursor is null in PlayerController.cs");
+                throw new System.Exception("TableCursor is null in PlayerController.cs. Set TableCursor component on PlayerController gameobject");
 
             Orientation = Vector3.right;
 

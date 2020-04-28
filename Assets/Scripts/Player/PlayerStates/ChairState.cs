@@ -9,14 +9,14 @@ namespace Player.PlayerStates
 {
     public class ChairState : PlayerState
     {
-        private Interior chair;
-        public ChairState(PlayerController player, Interior interior) : base(player)
+        private readonly Chair Chair;
+        public ChairState(PlayerController player, Chair interior) : base(player)
         {
-            chair = interior;
+            Chair = interior;
             Player.StopMovement();
-            Player.transform.position = chair.transform.position;
-            Player.rend.flipX = chair.hor > 0 ? true : false;
-            Player.animator.Play("SitDown");
+            Player.transform.position = Chair.transform.position;
+            Player.SpriteRenderer.flipX = Chair.horOrientation > 0 ? true : false;
+            Player.Animator.Play("SitDown");
 
         }
 
@@ -36,28 +36,28 @@ namespace Player.PlayerStates
 
             if (hor != 0 || ver != 0)
             {
-                if (hor * chair.hor + ver * chair.ver == 0)
+                if (hor * Chair.horOrientation + ver * Chair.verOrientation == 0)
                 {
                     Player.MoveWithoutCollision(hor, ver);
                     
                     if (hor > 0)
                     {
-                        Player.rend.flipX = false;
-                        Player.animator.Play("MoveRight");
+                        Player.SpriteRenderer.flipX = false;
+                        Player.Animator.Play("MoveRight");
                     }
                         
                     else if (hor < 0)
                     {
-                        Player.rend.flipX = true;
-                        Player.animator.Play("MoveRight");
+                        Player.SpriteRenderer.flipX = true;
+                        Player.Animator.Play("MoveRight");
                     }
                     else if (ver > 0)
                     {
-                        Player.animator.Play("MoveUp");
+                        Player.Animator.Play("MoveUp");
                     }
                     else if (ver < 0)
                     {
-                        Player.animator.Play("MoveDown");
+                        Player.Animator.Play("MoveDown");
                     }
                     
                     return new BaseState(Player);

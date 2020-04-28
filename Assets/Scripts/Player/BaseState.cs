@@ -46,22 +46,22 @@ namespace Player.PlayerStates
 
                     if (hor > 0)
                     {
-                        Player.rend.flipX = false;
-                        Player.animator.Play("MoveRight");
+                        Player.SpriteRenderer.flipX = false;
+                        Player.Animator.Play("MoveRight");
                     }
                         
                     else if (hor < 0)
                     {
-                        Player.rend.flipX = true;
-                        Player.animator.Play("MoveRight");
+                        Player.SpriteRenderer.flipX = true;
+                        Player.Animator.Play("MoveRight");
                     }
                     else if (ver > 0)
                     {
-                        Player.animator.Play("MoveUp");
+                        Player.Animator.Play("MoveUp");
                     }
                     else if (ver < 0)
                     {
-                        Player.animator.Play("MoveDown");
+                        Player.Animator.Play("MoveDown");
                     }
                 }
                 

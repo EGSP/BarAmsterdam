@@ -7,12 +7,19 @@ using UnityEngine;
 
 namespace Interiors
 {
-
-
     public class Chair : Interior
     {
         [SerializeField] private bool AutoOrientation = true;
 
+        /// <summary>
+        /// Ориентация по вертикали от -1 до 1
+        /// </summary>
+        public int verOrientation { get; private set; } = 0;
+
+        /// <summary>
+        /// Ориентация по горизонтали от -1 до 1
+        /// </summary>
+        public int horOrientation { get; private set; } = 1;
 
         public override PlayerState GetPlayerState(PlayerController playerController)
         {
@@ -42,13 +49,13 @@ namespace Interiors
                 
                 if (hit.collider != null)
                 {
-                    ver = vertical;
-                    hor = horisontal;
+                    verOrientation = vertical;
+                    horOrientation = horisontal;
                     return;
                 }
             };
-            ver = 0;
-            hor = 0;
+            verOrientation = 0;
+            horOrientation = 1;
             return;
         }
 
