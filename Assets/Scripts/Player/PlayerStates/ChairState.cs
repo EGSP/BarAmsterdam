@@ -9,14 +9,14 @@ namespace Player.PlayerStates
 {
     public class ChairState : PlayerState
     {
-        public ChairState(PlayerController player) : base(player)
+        private Interior chair;
+        public ChairState(PlayerController player, Interior interior) : base(player)
         {
-            /// ДОБАВИТЬ В КОНСТРУКТОР АРГУМЕНТОМ ТИП CHAIR.
-            /// ЭТОТ АРГУМЕНТ СОХРАНИТЬ КАК PRIVATE READONLY (ЧИТАЕМ ПРО DEPENDECY INJECTION)
-
-            ///МГНОВЕННОЕ ПЕРЕМЕЩЕНИЕ В НУЖНУЮ ПОЗИЦИЮ, ПОЗИЦИЮ СТУЛА
-            //Player.StopMovement();
-            //Player.transform.position = СТУЛ.transform.position
+            chair = interior;
+            Player.StopMovement();
+            Player.transform.position = chair.transform.position;
+            Player.rend.flipX = chair.hor > 0 ? true : false;
+            Player.animator.Play("SitDown");
 
         }
 
@@ -28,10 +28,42 @@ namespace Player.PlayerStates
 
         public override PlayerState UpdateState(UpdateData updateData)
         {
-            //// Нажатие и удерживание могут совпадать (особенность движка)
-            //// Нажатие на кнопку
-            //var hor = (int)DeviceInput.GetHorizontalAxisDown();
-            //var ver = (int)DeviceInput.GetVerticalAxisDown();
+            // Нажатие и удерживание могут совпадать (особенность движка)
+            // Нажатие на кнопку
+            var hor = (int)DeviceInput.GetHorizontalAxisDown();
+            var ver = (int)DeviceInput.GetVerticalAxisDown();
+
+
+            if (hor != 0 || ver != 0)
+            {
+                if (hor * chair.hor + ver * chair.ver == 0)
+                {
+                    Player.MoveWithoutCollision(hor, ver);
+                    
+                    if (hor > 0)
+                    {
+                        Player.rend.flipX = false;
+                        Player.animator.Play("MoveRight");
+                    }
+                        
+                    else if (hor < 0)
+                    {
+                        Player.rend.flipX = true;
+                        Player.animator.Play("MoveRight");
+                    }
+                    else if (ver > 0)
+                    {
+                        Player.animator.Play("MoveUp");
+                    }
+                    else if (ver < 0)
+                    {
+                        Player.animator.Play("MoveDown");
+                    }
+                    
+                    return new BaseState(Player);
+                }
+            }
+            
 
             /// СДЕЛАТЬ КАК В BASESTATE (ГОРИЗОНТАЛЬ ПРИОРИТЕТНЕЕ ВЕРТИКАЛИ)
 
