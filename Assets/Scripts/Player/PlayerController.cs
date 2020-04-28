@@ -82,11 +82,17 @@ namespace Player.Controllers
         /// Кешируем данные обновления, чтобы не пересоздавать каждый кадр
         /// </summary>
         private UpdateData updateData;
+        
+        public Animator animator;
+        public SpriteRenderer rend;
 
         
 
         private void Awake()
         {
+            animator = GetComponent<Animator>();
+            rend = GetComponent<SpriteRenderer>();
+                
             if (TableCursor == null)
                 throw new System.Exception("TableCursor is null in PlayerController.cs");
 
@@ -101,6 +107,7 @@ namespace Player.Controllers
         {
             updateData.deltaTime = Time.deltaTime;
             CurrentPlayerState = CurrentPlayerState.UpdateState(updateData);
+            // Debug.Log(CurrentPlayerState);
         }
 
         /// <summary>
@@ -140,6 +147,7 @@ namespace Player.Controllers
                     //ChangeOrientation(horizontalInput, verticalInput);
                     ChangeOrientation(horizontalInput, 0);
 
+                    
                     newPosition += horizontalDir;
                     newPosition += verticalDir;
 
@@ -172,6 +180,14 @@ namespace Player.Controllers
             StartCoroutine(movementRoutine);
         }
 
+        public void MoveWithoutCollision(int horizontalInput, int verticalInput)
+        {
+            LayerMask saveCollision = collisionMask;
+            collisionMask = ~1;
+            Move(horizontalInput, verticalInput);
+            collisionMask = saveCollision;
+        }
+
         /// <summary>
         /// Смена ориентации, направления взгляда, игрока. Проверки на ноль есть.
         /// </summary>
@@ -200,7 +216,7 @@ namespace Player.Controllers
         /// </summary>
         /// <param name="newPosition">Новая позиция</param>
         /// <returns></returns>
-        protected IEnumerator Movement(Vector3 newPosition)
+        public IEnumerator Movement(Vector3 newPosition)
         {
             var sqrMagnitude = (transform.position - newPosition).sqrMagnitude;
 

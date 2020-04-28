@@ -43,6 +43,26 @@ namespace Player.PlayerStates
                 if ((hor != 0 || ver != 0) && Player.IsMoving == false)
                 {
                     Player.Move(hor, ver);
+
+                    if (hor > 0)
+                    {
+                        Player.rend.flipX = false;
+                        Player.animator.Play("MoveRight");
+                    }
+                        
+                    else if (hor < 0)
+                    {
+                        Player.rend.flipX = true;
+                        Player.animator.Play("MoveRight");
+                    }
+                    else if (ver > 0)
+                    {
+                        Player.animator.Play("MoveUp");
+                    }
+                    else if (ver < 0)
+                    {
+                        Player.animator.Play("MoveDown");
+                    }
                 }
                 
                 return this;
@@ -63,11 +83,11 @@ namespace Player.PlayerStates
                 // Учитывается одновременное нажатие
                 if (horDown != 0)
                 {
-                    pos = Player.transform.position + Player.transform.right * Player.MoveStep * horDown;
+                    pos = Player.transform.position + Player.ModifiedOrientation;
 
                 }else if(verDown != 0)
                 {
-                    pos = Player.transform.position + Player.transform.up * Player.MoveStep * verDown;
+                    pos = Player.transform.position + Player.ModifiedOrientation;
                 }
 
                 Player.ChangeOrientation(horDown, verDown);
@@ -76,7 +96,7 @@ namespace Player.PlayerStates
                 var interior = Player.GetComponentByLinecast<Interior>(pos);
                 if (interior != null)
                 {
-                    
+                    return interior.GetPlayerState(Player);
                 }
                 
                 return this;
