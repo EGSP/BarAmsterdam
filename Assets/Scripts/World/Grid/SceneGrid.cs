@@ -7,6 +7,7 @@ using Grids;
 using TMPro;
 
 using Gasanov.SpeedUtils;
+using Gasanov.SpeedUtils.FileManagement;
 
 public class SceneGrid : MonoBehaviour
 {
@@ -41,6 +42,9 @@ public class SceneGrid : MonoBehaviour
         {
             textMeshes[width / 2, height / 2].text = t.ToString();
         });
+
+        var testData = new TestData(10, "Alex", 150);
+        var json = SaveSystem.ConvertObject<TestData>(testData);
     }
 
     private void Start()
@@ -60,22 +64,20 @@ public class SceneGrid : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if(gridInt != null)
+        if (gridInt == null) return;
+        for (int x = 0; x < width; x++)
         {
-            for (int x = 0; x < width; x++)
-            {
-                // Все вертикальные линии
-                Debug.DrawLine(gridInt.GetWorldPosition(x, 0), gridInt.GetWorldPosition(x, height));
-            }
-
-            for (int y = 0; y < height; y++)
-            {
-                Debug.DrawLine(gridInt.GetWorldPosition(0, y), gridInt.GetWorldPosition(width, y));
-            }
-
-            Debug.DrawLine(gridInt.GetWorldPosition(width, 0), gridInt.GetWorldPosition(width, height));
-            Debug.DrawLine(gridInt.GetWorldPosition(0, height), gridInt.GetWorldPosition(width, height));
+            // Все вертикальные линии
+            Debug.DrawLine(gridInt.GetWorldPosition(x, 0), gridInt.GetWorldPosition(x, height));
         }
+
+        for (int y = 0; y < height; y++)
+        {
+            Debug.DrawLine(gridInt.GetWorldPosition(0, y), gridInt.GetWorldPosition(width, y));
+        }
+
+        Debug.DrawLine(gridInt.GetWorldPosition(width, 0), gridInt.GetWorldPosition(width, height));
+        Debug.DrawLine(gridInt.GetWorldPosition(0, height), gridInt.GetWorldPosition(width, height));
     }
 }
 

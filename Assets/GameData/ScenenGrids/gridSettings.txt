@@ -1,0 +1,9 @@
+{
+    "$id": 0,
+    "$type": "0|GridEditor+SceneGridSettings, Assembly-CSharp",
+    "IsInitialized": true,
+    "Width": 10,
+    "Height": 10,
+    "CellSizeHorizontal": 1,
+    "CellSizeVertical": 0.5
+}

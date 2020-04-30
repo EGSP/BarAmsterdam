@@ -1,0 +1,24 @@
+﻿
+<UXML xmlns="UnityEngine.UIElements">
+    <!--Шаблон для кнопок-->
+    <Template path="Assets/Editors/GridEditorToolButtonTemplate.uxml" name="tool-button-template" />
+    
+    <!--Окно редактора-->
+    <VisualElement class="editor-window">
+        <!--Панель с инструментами-->
+        <VisualElement class="tool-holder">
+            <Instance template="tool-button-template" name="SelectTool" class="template-container"/>
+            <Instance template="tool-button-template" name="NavigationTool" class="template-container"/>
+        </VisualElement>
+    </VisualElement>
+
+    <!-- Creates a parent VisualElement in which we will add our template. -->
+    <!--<VisualElement class="buttons-container">
+        &lt;!&ndash; Instantiates the template multiple times. Each time, we give it a name and a class for future reference. &ndash;&gt;
+        <Instance template="button-template" name="Cube"/>
+        <Instance template="button-template" name="Sphere"/>
+        <Instance template="button-template" name="Capsule"/>
+        <Instance template="button-template" name="Cylinder"/>
+        <Instance template="button-template" name="Plane"/>
+    </VisualElement>-->
+</UXML>

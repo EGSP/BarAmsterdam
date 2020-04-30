@@ -21,9 +21,11 @@ public class QuickTool : EditorWindow
     {
         var root = rootVisualElement;
 
-        root.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Scripts/Testing(Gasanov)/QuickTool_Style.uss"));
+        root.styleSheets.Add(AssetDatabase.
+            LoadAssetAtPath<StyleSheet>("Assets/Scripts/Testing(Gasanov)/QuickTool_Style.uss"));
 
-        var quickToolVisualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Scripts/Testing(Gasanov)/QuickTool_Main.uxml");
+        var quickToolVisualTree = AssetDatabase.
+            LoadAssetAtPath<VisualTreeAsset>("Assets/Scripts/Testing(Gasanov)/QuickTool_Main.uxml");
         quickToolVisualTree.CloneTree(root);
 
         var toolButtons = root.Query<Button>();

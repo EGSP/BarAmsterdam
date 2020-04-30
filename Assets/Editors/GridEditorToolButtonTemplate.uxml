@@ -1,0 +1,9 @@
+﻿<UXML xmlns="UnityEngine.UIElements">
+    
+    <!--Кнопка инструмента-->
+    <Button class="tool-button">
+        <!--Контейнер иконки-->
+        <VisualElement class="tool-button-icon"/>
+    </Button>
+    
+</UXML>

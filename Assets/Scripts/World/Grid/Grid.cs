@@ -12,27 +12,27 @@ namespace Grids
         /// <summary>
         /// Количество ячеек по горизонтали
         /// </summary>
-        public int width { get; private set; }
+        public int Width { get; private set; }
 
         /// <summary>
         ///  Количество ячеек по вертикали
         /// </summary>
-        public int height { get; private set; }
+        public int Height { get; private set; }
 
         /// <summary>
         ///  Размер ячейки по горизонтали
         /// </summary>
-        public float cellHorizontalSize { get; private set; }
+        public float CellHorizontalSize { get; private set; }
 
         /// <summary>
         /// Размер ячейки по вертикали
         /// </summary>
-        public float cellVerticalSize { get; private set; }
+        public float CellVerticalSize { get; private set; }
 
         /// <summary>
         /// Массив объектов сетки
         /// </summary>
-        public TObject[,] gridArray { get; private set; }
+        public TObject[,] GridArray { get; private set; }
 
         /// <summary>
         /// Вызывается при изменении значения сетки. Передает два индекса и изменяемы объект
@@ -41,13 +41,13 @@ namespace Grids
 
         public Grid(int width, int height, float cellHorizontalSize, float cellVerticalSize)
         {
-            this.width = width;
-            this.height = height;
+            this.Width = width;
+            this.Height = height;
 
-            this.cellHorizontalSize = cellHorizontalSize;
-            this.cellVerticalSize = cellVerticalSize;
+            this.CellHorizontalSize = cellHorizontalSize;
+            this.CellVerticalSize = cellVerticalSize;
 
-            gridArray = new TObject[width, height];
+            GridArray = new TObject[width, height];
         }
 
 
@@ -59,7 +59,7 @@ namespace Grids
             {
                 for (int y = 0; y < height; y++)
                 {
-                    gridArray[x, y] = createTObject();
+                    GridArray[x, y] = createTObject();
                 }
             }
         }
@@ -72,7 +72,7 @@ namespace Grids
             {
                 for (int y = 0; y < height; y++)
                 {
-                    gridArray[x, y] = createTObject(x, y);
+                    GridArray[x, y] = createTObject(x, y);
                 }
             }
         }
@@ -85,7 +85,7 @@ namespace Grids
         /// </summary>
         public Vector3 GetWorldPosition(int x,int y)
         {
-            return new Vector3(x * cellHorizontalSize, y * cellVerticalSize);
+            return new Vector3(x * CellHorizontalSize, y * CellVerticalSize);
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace Grids
         /// </summary>
         public Vector3 GetCenteredWorldPostion(int x,int y)
         {
-            return new Vector3(x * cellHorizontalSize, y * cellVerticalSize) + new Vector3(cellHorizontalSize, cellVerticalSize) * 0.5f;
+            return new Vector3(x * CellHorizontalSize, y * CellVerticalSize) + new Vector3(CellHorizontalSize, CellVerticalSize) * 0.5f;
         }
 
         /// <summary>
@@ -102,8 +102,8 @@ namespace Grids
         /// </summary>
         public void WorldToIndex(Vector3 worldPos, out int x, out int y)
         {
-            x = Mathf.FloorToInt(worldPos.x / cellHorizontalSize);
-            y = Mathf.FloorToInt(worldPos.y / cellVerticalSize);
+            x = Mathf.FloorToInt(worldPos.x / CellHorizontalSize);
+            y = Mathf.FloorToInt(worldPos.y / CellVerticalSize);
         }
 
         //
@@ -120,8 +120,8 @@ namespace Grids
         /// <param name="popAction">Выполняемый метод</param>
         public void PopObject(int x, int y, Action<TObject> popAction)
         {
-            if (x >= 0 && y >= 0 && x < width && y < height)
-                popAction(gridArray[x, y]);
+            if (x >= 0 && y >= 0 && x < Width && y < Height)
+                popAction(GridArray[x, y]);
         }
 
         /// <summary>
@@ -144,8 +144,8 @@ namespace Grids
         /// <param name="popAction">Передает кроме объекта индексы в сетке</param>
         public void PopObject(int x,int y, Action<int,int,TObject> popAction)
         {
-            if (x >= 0 && y >= 0 && x < width && y < height)
-                popAction(x, y, gridArray[x, y]);
+            if (x >= 0 && y >= 0 && x < Width && y < Height)
+                popAction(x, y, GridArray[x, y]);
         }
 
         /// <summary>
@@ -166,8 +166,8 @@ namespace Grids
         /// </summary>
         public TObject GetObject(int x,int y)
         {
-            if (x >= 0 && y >= 0 && x < width && y < height)
-                return gridArray[x, y];
+            if (x >= 0 && y >= 0 && x < Width && y < Height)
+                return GridArray[x, y];
 
             return default(TObject);
         }
@@ -188,9 +188,9 @@ namespace Grids
         /// </summary>
         public void SetObject(int x,int y, TObject newObject)
         {
-            if (x >= 0 && y >= 0 && x < width && y < height)
+            if (x >= 0 && y >= 0 && x < Width && y < Height)
             {
-                gridArray[x, y] = newObject;
+                GridArray[x, y] = newObject;
                 OnGridObjectChanged(x, y, newObject);
             }
         }
@@ -212,11 +212,11 @@ namespace Grids
         /// <param name="action">Вызываемый метод. Аргументами являются индексы в сетке</param>
         public void ForEach(Action<int,int,TObject> action)
         {
-            for (int x = 0; x < width; x++)
+            for (int x = 0; x < Width; x++)
             {
-                for (int y = 0; y < height; y++)
+                for (int y = 0; y < Height; y++)
                 {
-                    action(x, y,gridArray[x,y]);
+                    action(x, y,GridArray[x,y]);
                 }
             }
         }
