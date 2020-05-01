@@ -26,7 +26,21 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
     public event Action OnCollectionChanged = delegate { };
 
 
+    public bool PlaceAvailable
+    {
+        get
+        {
+            var freePlace = places.FirstOrDefault(x => x.CurrentItem.ID == "NullItem");
 
+            // Если нашли свободное место
+            if(freePlace != null)
+            {
+                return true;
+            }
+
+            return false;
+        }
+    }
 
     /// <summary>
     /// Добавляет предмет на стол в любую свободную ячейку
@@ -40,9 +54,10 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
         if(freePlace != null)
         {
             freePlace.PlaceItem(item);
+            
+            OnCollectionChanged();
         }
 
-        OnCollectionChanged();
     }
 
     /// <summary>
@@ -59,9 +74,9 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
             var place = freePlaces.OrderBy(x => (x.Position - initiatorPosition).sqrMagnitude);
 
             place.First().PlaceItem(item);
-        }
 
-        OnCollectionChanged();
+            OnCollectionChanged();
+        }
     }
 
     /// <summary>
