@@ -21,6 +21,8 @@ namespace Interiors
         /// </summary>
         public int horOrientation { get; private set; } = 1;
 
+        public TableTop table;
+
         public override PlayerState GetPlayerState(PlayerController playerController)
         {
             return new ChairState(playerController, this);
@@ -49,6 +51,7 @@ namespace Interiors
                 
                 if (hit.collider != null)
                 {
+                    table = hit.collider.gameObject.GetComponent<TableTop>();
                     verOrientation = vertical;
                     horOrientation = horisontal;
                     return;
@@ -59,7 +62,7 @@ namespace Interiors
             return;
         }
 
-        public void Awake()
+        public void Start()
         {
             if(AutoOrientation)
                 SetOrientation();

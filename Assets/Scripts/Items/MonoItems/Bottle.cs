@@ -6,10 +6,57 @@ using Items.MonoItems;
 using Player.Controllers;
 using Player.PlayerStates;
 
-public class Bottle : MonoItem
+namespace Items.MonoItems
 {
-    public override PlayerState GetPlayerState(PlayerController playerController)
+    public class Bottle : MonoItem
     {
-        return new BaseState(playerController);
+        public enum Drink
+        {
+            Whisky,
+            Vodka,
+            Gin,
+            Brandy,
+            Wine,
+            Beer,
+            Clean
+        }
+
+        public Drink DrinkType { get => drinkType;}
+
+        [SerializeField] private Drink drinkType;
+
+        private int maxFullness;
+        private int currentFullness;
+
+        public bool isFull
+        {
+            get => currentFullness == maxFullness ? true : false;
+        }
+
+        public bool isFill
+        {
+            get => currentFullness != 0 ? true : false;
+        }
+
+        public override PlayerState GetPlayerState(PlayerController playerController)
+        {
+            return new BottleState(playerController, this);
+        }
+
+        public void PourOff(Glass glass)
+        {
+            if (isFull)
+            {
+                currentFullness = currentFullness > 0 ? currentFullness - 1 : 0;
+                glass.Pour(this);
+            }
+        }
+
+        public PlayerState ThrowOut(PlayerController playerController)
+        {
+            Destroy(this);
+            return new BaseState(playerController);
+        }
+
     }
 }
