@@ -9,7 +9,7 @@ namespace Player.PlayerStates
 {
     public class ChairState : PlayerState
     {
-        private readonly Chair Chair;
+        public Chair Chair;
         public ChairState(PlayerController player, Chair interior) : base(player)
         {
             Chair = interior;
@@ -25,8 +25,26 @@ namespace Player.PlayerStates
         {
             return;
         }
+        
+        public override PlayerState Action(UpdateData updateData)
+        {
+            Debug.Log("chair action");
+            return this;
+        }
+        
+        public override PlayerState Handle(UpdateData updateData)
+        {
+            Debug.Log("chair hdl");
+            return this;
+        }
+        
+        public override PlayerState Extra(UpdateData updateData)
+        {
+            Debug.Log("chair xtra");
+            return this;
+        }
 
-        public override PlayerState UpdateState(UpdateData updateData)
+        public override PlayerState Move(UpdateData updateData)
         {
             // Нажатие и удерживание могут совпадать (особенность движка)
             // Нажатие на кнопку
@@ -64,44 +82,6 @@ namespace Player.PlayerStates
                 }
             }
             
-
-            /// СДЕЛАТЬ КАК В BASESTATE (ГОРИЗОНТАЛЬ ПРИОРИТЕТНЕЕ ВЕРТИКАЛИ)
-
-            //var pos = Player.transform.position + new Vector3(Player.MoveStep * hor, Player.MoveStep * ver * Player.VerticalStepModifier, 0);
-            
-            //// Ищем объект перед нами
-            //var interior = Player.GetComponentByLinecast<Interior>(pos);
-            
-            /// ТЕПЕРЬ НАМ НЕ НУЖНО ИСКАТЬ СТУЛ, МЫ УЖЕ НА СТУЛЕ, Т.К. УЖЕ ВКЛЮЧИЛИ ЭТО СОСТОЯНИЕ
-
-            ////Сесть на стул
-            //if (interior != null)
-            //{
-            //    Player.interior = interior;
-            //    interior.GetComponent<BoxCollider2D>().enabled = false;
-            //    Player.transform.position = pos;
-            //    return this;
-            //}
-            ////Не садиться на стул
-            //else if (ver + hor != 0  && Player.interior == null)
-            //{
-            //    return new BaseState(Player);
-            //}
-            //// Встать со стула
-            //else if (ver != 0 && hor == 0)
-            //{
-            //    Player.transform.position = pos;
-            //    if (Player.interior != null)
-            //    {
-            //        Player.interior.GetComponent<BoxCollider2D>().enabled = true;
-            //        Player.interior = null;
-            //    }
-            //    return new BaseState(Player);
-            //}
-
-            /// ВСТАТЬ СО СТУЛА МОЖНО ЕСЛИ ИГРОК НАЖАЛ ИЛИ УДЕРЖИВАЕТ КНОПКУ ОСИ
-            /// НАПРАВЛЕНИЕ БЕРЕМ КАК В МЕТОДЕ MOVE В КОНТРОЛЛЕРЕ. ПОКА МОЖНО СКОПИПАСТИТЬ
-
             return this;
         }
     }

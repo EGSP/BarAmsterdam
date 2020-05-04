@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
+using System;
 
-using Core;
 using Interiors;
+using Items.MonoItems;
 
 using Player.Controllers;
 using Player.PlayerCursors;
@@ -24,15 +25,32 @@ namespace Player.PlayerStates
             return;
         }
 
-        public override PlayerState UpdateState(UpdateData updateData)
+        public PlayerState Pose(UpdateData updateData)
         {
+            var pos = Vector3.zero;
+            pos = Player.transform.position + Player.ModifiedOrientation;
                 
+            // Ищем объект перед нами
+            var interior = Player.GetComponentByLinecast<Interior>(pos);
+            if (interior != null)
+            {
+                
+                Debug.Log(string.Format("Pose {0}", interior));
+                return interior.GetPlayerState(Player);
+            }
+
+            Debug.Log(string.Format("Pose {0}", this));
+            return this;
+        }
+
+        public override PlayerState Move(UpdateData updateData)
+        {
+            Debug.Log("Move");
             // Удерживание кнопки
-            var hor = (int)DeviceInput.GetHorizontalAxis();
-            var ver = (int)DeviceInput.GetVerticalAxis();
+            int hor = updateData.hor;
+            int ver = updateData.ver;
 
-            var cursor = Player.TableCursor;
-
+            var cursor = updateData.cursor;
 
             // Если есть удержание по одной из осей
             if (hor != 0 || ver != 0)
@@ -70,72 +88,78 @@ namespace Player.PlayerStates
             }
 
             // Нажатие на кнопку
-            var horDown = (int)DeviceInput.GetHorizontalAxisDown();
-            var verDown = (int)DeviceInput.GetVerticalAxisDown();
+            int horDown = updateData.horDown;
+            int verDown = updateData.verDown;
 
             // Если нажали на одну из кнопок
             if(horDown != 0 || verDown != 0)
             {
                 cursor.Cancel();
 
-                var pos = Vector3.zero;
-
-                // Учитывается одновременное нажатие
-                if (horDown != 0)
-                {
-                    pos = Player.transform.position + Player.ModifiedOrientation;
-
-                }else if(verDown != 0)
-                {
-                    pos = Player.transform.position + Player.ModifiedOrientation;
-                }
-
                 Player.ChangeOrientation(horDown, verDown);
 
-                // Ищем объект перед нами
-                var interior = Player.GetComponentByLinecast<Interior>(pos);
-                if (interior != null)
+                // Принимаем позу
+                return Pose(updateData);
+            }
+
+            return this;
+        }
+
+        public override PlayerState Handle(UpdateData updateData)
+        {
+            var cursor = updateData.cursor;
+            var tableTop = Player.GetComponentByLinecast<TableTop>(
+                Player.transform.position + Player.ModifiedOrientation);
+
+            MonoItem item;
+            try
+            {
+                if(cursor.IsActive)
+                    item = (MonoItem) tableTop.TakeItemByReference(cursor.getItem());
+                else
                 {
-                    return interior.GetPlayerState(Player);
+                    throw new Exception();
                 }
-                
-                return this;
             }
-
-            //
-            // Если не нажали на кнопку передвижения
-            //
-
-            // Нажатие на кнопку Z
-            if (DeviceInput.GetHandleButtonDown())
+            catch
             {
-
+                item = (MonoItem) tableTop.TakeItemByDistance(Player.transform.position);
             }
+            
+            
+            item.transform.parent = Player.transform;
+            return item.GetPlayerState(Player);
+        }
 
-            // Нажатие на Space
-            if (DeviceInput.GetExtraButtonDown())
+        public override PlayerState Action(UpdateData updateData)
+        {
+            Debug.Log("Smoking");
+            
+            return this;
+        }
+
+        public override PlayerState Extra(UpdateData updateData)
+        {
+            var cursor = updateData.cursor;
+            
+            // Если курсор ни на что не указывает
+            if(cursor.IsActive == false)
             {
-                // Если курсор ни на что не указывает
-                if(cursor.IsActive == false)
+                var cursorEnumerable = Player.GetComponentByLinecast<ICursorEnumerable>(Player.transform.position + Player.ModifiedOrientation);
+
+                if(cursorEnumerable != null)
                 {
-                    var cursorEnumerable = Player.GetComponentByLinecast<ICursorEnumerable>(Player.transform.position + Player.ModifiedOrientation);
-
-                    if(cursorEnumerable != null)
-                    {
-                        var cursorEnumerator = new CursorEnumerator(cursorEnumerable);
-                        cursor.SetCursorEnumerator(cursorEnumerator);
-                    }
-                    else
-                    {
-                        cursor.Cancel();
-                    }
+                    var cursorEnumerator = new CursorEnumerator(cursorEnumerable);
+                    cursor.SetCursorEnumerator(cursorEnumerator);
                 }
                 else
                 {
-                    cursor.Next();
+                    cursor.Cancel();
                 }
-
-                return this;
+            }
+            else
+            {
+                cursor.Next();
             }
 
             return this;
