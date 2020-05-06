@@ -8,26 +8,25 @@ using UnityEngine;
 using UnityEditor;
 
 using Grids;
-using OdinSerializer;
+using UnityEditor.UIElements;
+using World;
 using UnityEngine.UIElements;
 
-public class GridEditor: EditorWindow
+public partial class GridEditor: EditorWindow
 {
-    private readonly string DataPath = "GridEditoData/";
+    private static readonly string DataPath = "GridEditorData/";
 
     // Текущие настройки сетки
     private SceneGridSettings gridSettings;
 
     // Текущий объект сцены
     private SceneGrid sceneGrid;
-
     
-    // Сетка всех ячеек
-    private Grid<Transform> baseGrid;
-    
-    // Текущая сетка навигации
-    private Grid<bool> navigationGrid;
+    private VisualElement workspace;
 
+    private bool isNavHighlighted;
+    private Task<Grid<int>> navGenerationTask;
+    
     
     [MenuItem("GridEditor/Open")]
     private static void ShowWindow()
@@ -38,58 +37,17 @@ public class GridEditor: EditorWindow
         
         window.minSize = new Vector2(250,300);
         window.maxSize = new Vector2(500,600);
-        
-        
     }
-
-    private void OnEnable()
-    {
-        var root = rootVisualElement;
-        
-        root.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Editors/GridEditor_Style.uss"));
-
-        var editorWindow = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editors/GridEditor_Window.uxml");
-
-        var editorContainer = editorWindow.CloneTree();
-        root.Add(editorContainer);
-
-        var toolButtons = root.Query<Button>(null, "tool-button");
-        toolButtons.ForEach(SetupTools);
-        
-        LoadGridSettings();
-        CheckGameObjectHierarchy();
-    }
-
-    private void SetupTools(Button button)
-    {
-        Debug.Log(button.name);
-
-        var parentName = button.parent.name;
-
-        switch (parentName)
-        {
-            case "NavigationTool":
-                break;
-        }
-        button.tooltip = parentName;
-    }
-
-    private void LoadNavigationGrid()
-    {
-        
-    }
-
+    
     /// <summary>
     /// Загрузка настроек сетки
     /// </summary>
-    private void LoadGridSettings()
+    private void InitializeGridEditor()
     {
-        var path = "ScenenGrids/";
+        var settings = LoadGridSettings();
+        // SceneGridSettings test;
         
-        var settings = SaveSystem.LoadObject<SceneGridSettings>("gridSize", path);
-        SceneGridSettings test;
-        
-        if (settings == null|| settings.IsInitialized==false)
+        if (settings.IsInitialized==false)
         {
             settings = new SceneGridSettings();
             settings.Width = 10;
@@ -97,82 +55,244 @@ public class GridEditor: EditorWindow
             settings.CellSizeHorizontal = 1f;
             settings.CellSizeVertical = 0.5f;
             settings.IsInitialized = true;
-            
-            SaveSystem.SaveObject<SceneGridSettings>(settings,"gridSettings",true, path);
-            test = SaveSystem.LoadObject<SceneGridSettings>("gridSettings", path);
-        }
 
+            gridSettings = settings;
+            SaveGridSettings();
+            return;
+            // test = SaveSystem.LoadObject<SceneGridSettings>("gridSettings", path);
+        }
         gridSettings = settings;
+
+        var navGrid = LoadNavigationGrid();
+        // Загрузка сетки навигации
+        if (navGrid == null)
+        {
+            navGrid = new Grid<int>(gridSettings.Width, gridSettings.Height, gridSettings.CellSizeHorizontal,
+                gridSettings.CellSizeVertical);
+            
+            SaveNavigationGrid(navGrid);
+        }
     }
 
-    private void CheckGameObjectHierarchy()
+    private void OnEnable()
     {
-        var sceneGridGameObject = GameObject.Find("SceneGrid");
+        InitializeGridEditor();
+        CheckSceneGrid();
         
-        // Создание объекта сетик сцены
-        if (sceneGridGameObject == null)
+        var root = rootVisualElement;
+        
+        root.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Editors/GridEditor_Style.uss"));
+
+        var editorWindowAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editors/GridEditor_Window.uxml");
+
+        var editorWindowVisual = editorWindowAsset.CloneTree();
+        root.Add(editorWindowVisual);
+
+        var toolButtons = editorWindowVisual.Query<Button>(null, "tool-button");
+        toolButtons.ForEach(SetupTools);
+
+        workspace = editorWindowVisual.Q<VisualElement>(null, "workspace");
+        
+    }
+    
+    /// <summary>
+    /// Проверка объекта сетки сцены. Если объект отсутствует, то он будет создан
+    /// </summary>
+    private void CheckSceneGrid()
+    {
+        GameObject sceneGridGameObject = null;
+        sceneGrid = GameObject.FindObjectOfType<SceneGrid>(); 
+        
+        if (sceneGrid == null)
         {
             sceneGridGameObject = new GameObject("SceneGrid",typeof(SceneGrid));
-        }
-
-        // Получение компонента сетки сцены
-        sceneGrid = sceneGridGameObject.GetComponent<SceneGrid>();
-        
-        baseGrid = new Grid<Transform>(gridSettings.Width,gridSettings.Height,gridSettings.CellSizeHorizontal,
-            gridSettings.CellSizeVertical);
-        
-        // Если количество дочерних объектов меньше количества ячеек
-        if (sceneGridGameObject.transform.childCount < gridSettings.CellCount)
-        {
-            // Очищаем все лишние объекты
-            if (sceneGridGameObject.transform.childCount != 0)
-            {
-                // Проходимся по всем дочерним объектам
-                foreach (Transform child in sceneGridGameObject.transform)
-                {
-                    Destroy(child.gameObject);
-                }
-            }
-            
-            // Создание объектов ячеек
-            baseGrid.ForEach((x, y, t) =>
-            {
-                t = new GameObject("Grid_Test").transform;
-                t.position = baseGrid.GetWorldPosition(x, y);
-                t.parent = sceneGridGameObject.transform;
-            });
+            // Получение компонента сетки сцены
+            sceneGrid = sceneGridGameObject.GetComponent<SceneGrid>();
         }
         else
         {
-            // Устанавливаем позицию
-            baseGrid.ForEach((x, y, t) =>
-            {
-                var cellObject = sceneGridGameObject.transform.GetChild(x * baseGrid.Width + y);
-                t = cellObject;
-                t.position = baseGrid.GetWorldPosition(x, y);
-            });   
+            sceneGridGameObject = sceneGrid.gameObject;
         }
-    }
-    
-    
 
-    [System.Serializable]
-    private class SceneGridSettings
-    {
-        [OdinSerialize]
-        public bool IsInitialized { get; set; }
-        [OdinSerialize]
-        public int Width { get; set; }
-        [OdinSerialize]
-        public int Height { get; set; }
-
-        public int CellCount => Width * Height;
-
-        [OdinSerialize]
-        public float CellSizeHorizontal { get; set; }
+        sceneGrid.SetGridSettings(gridSettings);
+        sceneGrid.InitializeGameObjectHierarchy();
+        sceneGrid.GenerateCellVisual();
         
-        [OdinSerialize]
-        public float CellSizeVertical { get; set; }
+        // Сетка навигации
+        sceneGrid.SetNavigationGrid(LoadNavigationGrid());
+        
     }
+    
+    
+
+    private void SetupTools(Button button)
+    {
+
+        var parentName = button.parent.name;
+
+        switch (parentName)
+        {
+            case "SelectTool":
+                break;
+                
+            case "NavigationTool":
+                button.clicked += OnNavigationToolSelected;
+                break;
+            
+            case "Settings":
+                button.clicked += OnSettingsToolSelected;
+                break;
+        }
+        button.tooltip = parentName;
+    }
+
+    public void OnNavigationToolSelected()
+    {
+        var navigationWindow = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editors/NavigationGrid_Form.uxml");
+        var navigationWindowVisual = navigationWindow.CloneTree();
+        
+        workspace.Clear();
+        workspace.Add(navigationWindowVisual);
+
+        var showButton = navigationWindowVisual.Q<Button>("show-button");
+        var generateButton = navigationWindowVisual.Q<Button>("generate-button");
+
+        var collisionField = navigationWindowVisual.Q<LayerMaskField>("collision-mask");
+
+        showButton.clicked += () =>
+        {
+            if (isNavHighlighted == true)
+            {
+                sceneGrid.ResetHighlight();
+                isNavHighlighted = false;
+            }
+            else
+            {
+                sceneGrid.HighlightNavigationGrid();
+                isNavHighlighted = true;
+            }
+        };
+
+        generateButton.clicked += () =>
+        {
+            if (navGenerationTask == null || navGenerationTask.IsCompleted)
+            {
+                sceneGrid.ResetHighlight();
+                isNavHighlighted = false;
+
+                navGenerationTask = SceneGrid.BakeNavigationGrid(collisionField.value, gridSettings)
+                    .ContinueWith(t =>
+                    {
+                        sceneGrid.SetNavigationGrid(t.Result);
+                        Debug.Log("Установка навигационной сетки завершена");
+
+                        return t.Result;
+                    });
+            }
+            else
+            {
+                Debug.Log("Генерация навигационной сетки еще не завершена");
+            }
+        };
+    }
+
+    /// <summary>
+    /// Метод обрабатывающий нажатие на кнопку настроек
+    /// </summary>
+    public void OnSettingsToolSelected()
+    {
+        var settingsWindow = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editors/SceneGridSettings_Form.uxml");
+        var settingsWindowVisual = settingsWindow.CloneTree();
+        
+        workspace.Clear();
+        workspace.Add(settingsWindowVisual);
+
+        var visualWidth = settingsWindowVisual.Q<IntegerField>("width");
+        var visualHeight = settingsWindowVisual.Q<IntegerField>("height");
+        var visualCellSizeHorizontal = settingsWindowVisual.Q<FloatField>("cellSizeHorizontal");
+        var visualCellSizeVertical = settingsWindowVisual.Q<FloatField>("cellSizeVertical");
+        
+        // Set gridSettings values
+        visualWidth.value = gridSettings.Width;
+        visualHeight.value = gridSettings.Height;
+        visualCellSizeHorizontal.value = gridSettings.CellSizeHorizontal;
+        visualCellSizeVertical.value = gridSettings.CellSizeVertical;
+        
+        // Accept button setup
+        var acceptButton = settingsWindowVisual.Q<Button>("accept-button");
+        acceptButton.tooltip = "Применяет новые настройки для сетки";
+        acceptButton.clicked += () =>
+        {
+            int width, height;
+            float cellSizeHorizontal, cellSizeVertical;
+            // Парсинг переменных
+            width = visualWidth.value;
+            height = visualHeight.value;
+
+            cellSizeHorizontal = visualCellSizeHorizontal.value;
+            cellSizeVertical = visualCellSizeVertical.value;
+
+            gridSettings.Width = width;
+            gridSettings.Height = height;
+            gridSettings.CellSizeHorizontal = cellSizeHorizontal;
+            gridSettings.CellSizeVertical = cellSizeVertical;
+            
+            SaveGridSettings();
+            
+            sceneGrid.ApplyGridSettings(gridSettings);
+            
+            Debug.Log("Настройки сетки были сохранены");
+        };
+        
+        // Default button setup
+        var defaultButton = settingsWindowVisual.Q<Button>("default-button");
+        defaultButton.tooltip = "Возвращает прежние настройки сетки";
+        defaultButton.clicked += () =>
+        {
+            // Set gridSettings values
+            visualWidth.value = gridSettings.Width;
+            visualHeight.value = gridSettings.Height;
+            visualCellSizeHorizontal.value = gridSettings.CellSizeHorizontal;
+            visualCellSizeVertical.value = gridSettings.CellSizeVertical;
+        };
+    }
+
+    
+
+    /// <summary>
+    /// Сохранение текущих настроек сетки
+    /// </summary>
+    private void SaveGridSettings()
+    {
+        var path = "SceneGrids/";
+        SaveSystem.SaveObject<SceneGridSettings>(gridSettings,"gridSettings",true,DataPath+path);
+    }
+
+    private void SaveNavigationGrid(Grid<int> navigationGrid)
+    {
+        var path = "SceneGrids/";
+        SaveSystem.SaveObject<Grid<int>>(navigationGrid,"navigationGrid",true,DataPath+path);
+    }
+
+    /// <summary>
+    /// Загружает настройки сетки
+    /// </summary>
+    /// <returns></returns>
+    public static SceneGridSettings LoadGridSettings()
+    {
+        var path = "SceneGrids/";
+        return  SaveSystem.LoadObject<SceneGridSettings>("gridSettings", DataPath+path);
+    }
+
+    /// <summary>
+    /// Загружает сетку навигации
+    /// </summary>
+    public static Grid<int> LoadNavigationGrid()
+    {
+        var path = "SceneGrids/";
+        return SaveSystem.LoadObject<Grid<int>>("navigationGrid", DataPath + path);
+    }
+
+    
 }
 

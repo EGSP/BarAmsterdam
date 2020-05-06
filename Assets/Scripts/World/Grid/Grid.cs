@@ -5,6 +5,8 @@ using UnityEngine;
 using System;
 using System.Linq;
 
+using OdinSerializer;
+
 namespace Grids
 {
     public class Grid<TObject>
@@ -22,57 +24,78 @@ namespace Grids
         /// <summary>
         ///  Размер ячейки по горизонтали
         /// </summary>
-        public float CellHorizontalSize { get; private set; }
+        public float CellSizeHorizontal { get; set; }
 
         /// <summary>
         /// Размер ячейки по вертикали
         /// </summary>
-        public float CellVerticalSize { get; private set; }
+        public float CellSizeVertical { get; set; }
 
+        [OdinSerialize]
         /// <summary>
         /// Массив объектов сетки
         /// </summary>
-        public TObject[,] GridArray { get; private set; }
+        private List<List<TObject>> GridArray { get; set; }
 
         /// <summary>
         /// Вызывается при изменении значения сетки. Передает два индекса и изменяемы объект
         /// </summary>
         public event Action<int,int,TObject> OnGridObjectChanged = delegate { };
 
-        public Grid(int width, int height, float cellHorizontalSize, float cellVerticalSize)
+        /// <summary>
+        /// Вызывается при удалении объекта из сетки
+        /// </summary>
+        public event Action<int, int, TObject> OnGridObjectDeleted = delegate { };
+
+        /// <summary>
+        /// Вызывается при создании объекта. Объект является значением default(TObject)
+        /// </summary>
+        public event Action<int, int, TObject> OnGridObjectCreated = delegate { }; 
+
+        public Grid(int width, int height, float cellSizeHorizontal, float cellSizeVertical)
         {
             this.Width = width;
             this.Height = height;
 
-            this.CellHorizontalSize = cellHorizontalSize;
-            this.CellVerticalSize = cellVerticalSize;
+            this.CellSizeHorizontal = cellSizeHorizontal;
+            this.CellSizeVertical = cellSizeVertical;
 
-            GridArray = new TObject[width, height];
+            GridArray = new List<List<TObject>>(Width);
+
+            for (var x = 0; x < Width; x++)
+            {
+                GridArray.Add(new List<TObject>(Height));
+                for (var y = 0; y < Height; y++)
+                {
+                    GridArray[x].Add(default(TObject));
+                }
+            }
+
         }
 
 
         /// <param name="createTObject">Функция создания объекта</param>
-        public Grid(int width, int height, float cellHorizontalSize, float cellVerticalSize, Func<TObject> createTObject)
-            : this(width, height, cellHorizontalSize, cellVerticalSize)
+        public Grid(int width, int height, float cellSizeHorizontal, float cellSizeVertical, Func<TObject> createTObject)
+            : this(width, height, cellSizeHorizontal, cellSizeVertical)
         {
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
-                    GridArray[x, y] = createTObject();
+                    GridArray[x][y] = createTObject();
                 }
             }
         }
 
         /// <param name="createTObject">Функция создания объекта. Получает координаты ячейки</param>
-        public Grid(int width, int height, float cellHorizontalSize, float cellVerticalSize, Func<int, int, TObject> createTObject)
-            : this(width, height, cellHorizontalSize, cellVerticalSize)
+        public Grid(int width, int height, float cellSizeHorizontal, float cellSizeVertical, Func<int, int, TObject> createTObject)
+            : this(width, height, cellSizeHorizontal, cellSizeVertical)
         {
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
-                    GridArray[x, y] = createTObject(x, y);
+                    GridArray[x][y] = createTObject(x, y);
                 }
             }
         }
@@ -85,7 +108,7 @@ namespace Grids
         /// </summary>
         public Vector3 GetWorldPosition(int x,int y)
         {
-            return new Vector3(x * CellHorizontalSize, y * CellVerticalSize);
+            return new Vector3(x * CellSizeHorizontal, y * CellSizeVertical);
         }
 
         /// <summary>
@@ -93,7 +116,23 @@ namespace Grids
         /// </summary>
         public Vector3 GetCenteredWorldPostion(int x,int y)
         {
-            return new Vector3(x * CellHorizontalSize, y * CellVerticalSize) + new Vector3(CellHorizontalSize, CellVerticalSize) * 0.5f;
+            return new Vector3(x * CellSizeHorizontal, y * CellSizeVertical) + new Vector3(CellSizeHorizontal, CellSizeVertical) * 0.5f;
+        }
+
+        /// <summary>
+        /// Возвращает мировую позицию нижнего левого угла
+        /// </summary>
+        public Vector3 GetBottomLeftCornerPosition(int x, int y)
+        {
+            return new Vector3(x * CellSizeHorizontal, y * CellSizeVertical);
+        }
+
+        /// <summary>
+        /// Возвращает мировую позицию верхнего правого угла
+        /// </summary>
+        public Vector3 GetTopRightCornerPosition(int x, int y)
+        {
+            return new Vector3(x * CellSizeHorizontal, y * CellSizeVertical) + new Vector3(CellSizeHorizontal, CellSizeVertical);
         }
 
         /// <summary>
@@ -102,8 +141,8 @@ namespace Grids
         /// </summary>
         public void WorldToIndex(Vector3 worldPos, out int x, out int y)
         {
-            x = Mathf.FloorToInt(worldPos.x / CellHorizontalSize);
-            y = Mathf.FloorToInt(worldPos.y / CellVerticalSize);
+            x = Mathf.FloorToInt(worldPos.x / CellSizeHorizontal);
+            y = Mathf.FloorToInt(worldPos.y / CellSizeVertical);
         }
 
         //
@@ -121,7 +160,7 @@ namespace Grids
         public void PopObject(int x, int y, Action<TObject> popAction)
         {
             if (x >= 0 && y >= 0 && x < Width && y < Height)
-                popAction(GridArray[x, y]);
+                popAction(GridArray[x][y]);
         }
 
         /// <summary>
@@ -145,7 +184,7 @@ namespace Grids
         public void PopObject(int x,int y, Action<int,int,TObject> popAction)
         {
             if (x >= 0 && y >= 0 && x < Width && y < Height)
-                popAction(x, y, GridArray[x, y]);
+                popAction(x, y, GridArray[x][y]);
         }
 
         /// <summary>
@@ -167,7 +206,7 @@ namespace Grids
         public TObject GetObject(int x,int y)
         {
             if (x >= 0 && y >= 0 && x < Width && y < Height)
-                return GridArray[x, y];
+                return GridArray[x][y];
 
             return default(TObject);
         }
@@ -190,7 +229,8 @@ namespace Grids
         {
             if (x >= 0 && y >= 0 && x < Width && y < Height)
             {
-                GridArray[x, y] = newObject;
+                // Debug.Log($"{x},{y} : {Width},{Height} : {GridArray.Count},{GridArray[x].Count}");
+                GridArray[x][y] = newObject;
                 OnGridObjectChanged(x, y, newObject);
             }
         }
@@ -216,7 +256,7 @@ namespace Grids
             {
                 for (int y = 0; y < Height; y++)
                 {
-                    action(x, y,GridArray[x,y]);
+                    action(x, y,GridArray[x][y]);
                 }
             }
         }
@@ -229,5 +269,117 @@ namespace Grids
         {
             OnGridObjectChanged(x,y,value);
         }
+
+        /// <summary>
+        /// Изменяет размер сетки
+        /// </summary>
+        /// <param name="newWidth">Новая ширина</param>
+        /// <param name="newHeight">Новая длина</param>
+        public void Resize(int newWidth, int newHeight)
+        {
+            var oldWidth = Width;
+            var oldHeight = Height;
+
+            Width = newWidth;
+            Height = newHeight;
+            
+            // Высоту менять перед шириной, т.к. при изменении высоты на не нужно создавать новые столбцы
+            List<Action> onGridObjectCreatedAction = new List<Action>();
+            List<Action> onGridObjectDeletedAction = new List<Action>();
+            
+            if (newHeight != oldHeight)
+            {
+                // Новая высота меньше текущей
+                if (newHeight < oldHeight)
+                {
+                    // Проходимся по всем столбцам
+                    for (var x = 0; x < oldWidth; x++)
+                    {
+                        // Проходимся сверху вниз у столбца
+                        for (var y = oldHeight - 1; y > newHeight - 1; y--)
+                        {
+                            var lx = x;
+                            var ly = y;
+                            OnGridObjectDeletedHandler(lx,ly, GridArray[lx][ly]);
+                            
+                            GridArray[x].RemoveAt(y);
+                        }
+                        GridArray[x].Capacity = newHeight;
+                    }
+                }
+                else // Новая высота больше текущей
+                {
+                    for (var x = 0; x < oldWidth; x++)
+                    {
+                        GridArray[x].Capacity = newHeight;
+                        for (var s = newHeight - oldHeight; s > 0; s--)
+                        {
+                            // Добавляем пустышки в столбец
+                            GridArray[x].Add(default(TObject));
+                            
+                            var lx = x;
+                            var ly = newHeight - s;
+                            OnGridObjectCreatedHandler(lx, ly, default(TObject));
+                        }
+                    }
+                }
+            }
+           
+            
+            // Изменяем ширину
+            if (newWidth != oldWidth)
+            {
+                // Новая ширина меньше текущей
+                if (newWidth < oldWidth)
+                {
+                    // Удаляем столбцы
+                    for (var x = oldWidth-1; x > newWidth-1; x--)
+                    {
+                        for (var y = 0; y < newHeight; y++)
+                        {
+                            var lx = x;
+                            var ly = y;
+                            // Оповещаем об удалении
+                            OnGridObjectDeletedHandler(lx, ly, GridArray[lx][ly]);
+                        }
+                        // Удаляем столбец (от конца)
+                        GridArray.RemoveAt(x);
+                    }
+                }
+                else // Новая ширина больше текущей
+                {
+                    // Добавляем новые столбцы
+                    for (var s = newWidth - oldWidth; s > 0; s--)
+                    {
+                        var newColumn = new List<TObject>(newHeight);
+                        GridArray.Add(newColumn);
+                        // Оповещаем о создании ячеек
+                        for (var y = 0; y < newHeight; y++)
+                        {
+                            var lx = newWidth - s;
+                            var ly = y;
+                            
+                            GridArray[lx].Add(default(TObject));
+                            // Debug.Log($"{lx}:{ly} lxly");
+                            OnGridObjectCreatedHandler(lx, ly, default(TObject));
+                        }
+                    }
+                }
+
+                GridArray.Capacity = newWidth;
+
+            }
+        }
+
+        private void OnGridObjectCreatedHandler(int x,int y,TObject createdObject)
+        {
+            OnGridObjectCreated(x, y, createdObject);
+        }
+
+        private void OnGridObjectDeletedHandler(int x,int y,TObject deletedObject)
+        {
+            OnGridObjectDeleted(x, y, deletedObject);
+        }
+        
     }
 }

@@ -1,0 +1,8 @@
+{
+    "$type": "0|World.SceneGridSettings, Assembly-CSharp",
+    "IsInitialized": true,
+    "Width": 4,
+    "Height": 4,
+    "CellSizeHorizontal": 2,
+    "CellSizeVertical": 2
+}

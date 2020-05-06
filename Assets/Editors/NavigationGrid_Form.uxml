@@ -1,0 +1,19 @@
+﻿<UXML xmlns="UnityEngine.UIElements"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:editor="UnityEditor.UIElements"
+
+      xsi:schemaLocation="UnityEditor.UIElements file:///D:/UProject/BarInAmsterdam/UIElementsSchema/UnityEditor.UIElements.xsd">
+    
+    <VisualElement>
+        <VisualElement class="workspace-info">
+            <Label name="label" text="Navigation grid settings" class="label-2" />
+        </VisualElement>
+        <!--Окно редактора-->
+        <Box class="navigation-form">
+            <editor:LayerMaskField name="collision-mask" label="Collision mask" class="field" />
+            <VisualElement>
+                <Button name="show-button" class="show-button" text="Show/Unshow" />
+                <Button name="generate-button" class="generate-button" text="Generate" />
+            </VisualElement>
+        </Box>
+    </VisualElement>
+</UXML>

@@ -10,6 +10,14 @@
     flex-wrap: wrap;
 }
 
+.label-2{
+    font-size: 18px;
+    -unity-font-style: bold;
+    align-self: center;
+    
+    margin-bottom: 10px;
+}
+
 .tool-holder{
     max-width: 100%;
     max-height: 10%;

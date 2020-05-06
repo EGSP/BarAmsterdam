@@ -1,0 +1,27 @@
+﻿<UXML xmlns="UnityEngine.UIElements"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:editor="UnityEditor.UIElements"
+
+      xsi:schemaLocation="UnityEditor.UIElements file:///D:/UProject/BarInAmsterdam/UIElementsSchema/UnityEditor.UIElements.xsd">
+    <!--Шаблон для кнопок-->
+    <Template path="Assets/Editors/GridEditorToolButtonTemplate.uxml" name="tool-button-template" />
+
+    <VisualElement>
+        <VisualElement class="workspace-info">
+            <Label name="label" text="SceneGrid settings" class="label-2" />
+        </VisualElement>
+        <!--Окно редактора-->
+        <Box class="grid-settings-form">
+
+            <editor:IntegerField name="width" label="Width" class="field" />
+            <editor:IntegerField name="height" label="Height" class="field" />
+            <editor:FloatField name="cellSizeHorizontal" label="CellSizeHorizontal" class="field" />
+            <editor:FloatField name="cellSizeVertical" label="CellSizeVertical" class="field"/>
+            <VisualElement>
+                <Button name="accept-button" class="action-button" text="Accept" />
+                <Button name="default-button" class="default-button" text="Default" />
+            </VisualElement>
+            
+            
+        </Box>
+    </VisualElement>
+</UXML>

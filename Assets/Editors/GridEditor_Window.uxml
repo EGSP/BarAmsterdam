@@ -1,15 +1,24 @@
-﻿
-<UXML xmlns="UnityEngine.UIElements">
+﻿<UXML xmlns="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="UnityEditor.UIElements file:///D:/UProject/BarInAmsterdam/UIElementsSchema/UnityEditor.UIElements.xsd">
     <!--Шаблон для кнопок-->
     <Template path="Assets/Editors/GridEditorToolButtonTemplate.uxml" name="tool-button-template" />
     
     <!--Окно редактора-->
     <VisualElement class="editor-window">
+        
         <!--Панель с инструментами-->
         <VisualElement class="tool-holder">
             <Instance template="tool-button-template" name="SelectTool" class="template-container"/>
             <Instance template="tool-button-template" name="NavigationTool" class="template-container"/>
+            <Instance template="tool-button-template" name="Settings" class="template-container"/>
         </VisualElement>
+        
+        <!--Пространство для расположения окон инструментов-->
+        <VisualElement class="workspace">
+            
+        </VisualElement> 
+        
     </VisualElement>
 
     <!-- Creates a parent VisualElement in which we will add our template. -->
