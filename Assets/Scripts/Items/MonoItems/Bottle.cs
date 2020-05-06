@@ -22,18 +22,34 @@ namespace Items.MonoItems
         }
 
         public Drink DrinkType { get => drinkType;}
-
+        
+        private float BottlePrice;
+        private int BottleVolume;
+        private float BottleWaitingTime;
+        private float BottleEatingTime;
+        private float BottleOrderChance;
+        
         [SerializeField] private Drink drinkType;
 
-        private int maxFullness;
         private int currentFullness;
 
-        public bool isFull
+        public Bottle()
         {
-            get => currentFullness == maxFullness ? true : false;
+            BottlePrice = FoodInfo.BottlePrice[drinkType];
+            BottleVolume = FoodInfo.BottleVolume[drinkType];
+            BottleWaitingTime = FoodInfo.BottleWaitingTime[drinkType];
+            BottleEatingTime = FoodInfo.BottleEatingTime[drinkType];
+            BottleOrderChance = FoodInfo.BottleOrderChance[drinkType];
+            
+            currentFullness = BottleVolume;
         }
 
         public bool isFill
+        {
+            get => currentFullness == BottleVolume ? true : false;
+        }
+
+        public bool isFull
         {
             get => currentFullness != 0 ? true : false;
         }
@@ -45,9 +61,11 @@ namespace Items.MonoItems
 
         public void PourOff(Glass glass)
         {
-            if (isFull)
+            if (isFull && glass.DrinkType == Bottle.Drink.Clean)
             {
+                Debug.Log(currentFullness);
                 currentFullness = currentFullness > 0 ? currentFullness - 1 : 0;
+                Debug.Log(currentFullness);
                 glass.Pour(this);
             }
         }
@@ -56,7 +74,8 @@ namespace Items.MonoItems
         {
             Destroy(this);
             return new BaseState(playerController);
-        }
-
+        } 
     }
+    
+
 }

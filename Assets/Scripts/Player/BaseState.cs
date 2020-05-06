@@ -34,18 +34,14 @@ namespace Player.PlayerStates
             var interior = Player.GetComponentByLinecast<Interior>(pos);
             if (interior != null)
             {
-                
-                Debug.Log(string.Format("Pose {0}", interior));
                 return interior.GetPlayerState(Player);
             }
 
-            Debug.Log(string.Format("Pose {0}", this));
             return this;
         }
 
         public override PlayerState Move(UpdateData updateData)
         {
-            Debug.Log("Move");
             // Удерживание кнопки
             int hor = updateData.hor;
             int ver = updateData.ver;
@@ -111,19 +107,14 @@ namespace Player.PlayerStates
             var tableTop = Player.GetComponentByLinecast<TableTop>(
                 Player.transform.position + Player.ModifiedOrientation);
 
+            Debug.Log(cursor.IsActive);
             MonoItem item;
-            try
+            
+            if(cursor.IsActive)
+                item = (MonoItem) tableTop.TakeItemByReference(cursor.getItem());
+            else
             {
-                if(cursor.IsActive)
-                    item = (MonoItem) tableTop.TakeItemByReference(cursor.getItem());
-                else
-                {
-                    throw new Exception();
-                }
-            }
-            catch
-            {
-                item = (MonoItem) tableTop.TakeItemByDistance(Player.transform.position);
+                item = tableTop.TakeItemByDistance(Player.transform.position);
             }
             
             

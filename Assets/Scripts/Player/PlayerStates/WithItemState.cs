@@ -25,7 +25,32 @@ namespace Player.PlayerStates
 
         public override PlayerState Move(UpdateData updateData)
         {
-            Debug.Log(string.Format("Move with {0}", item));
+            // Проверка можно ли сесть за стул (полный ли стол?)
+            int horDown = updateData.horDown;
+            int verDown = updateData.verDown;
+
+            // Если нажали на одну из кнопок
+            if (horDown != 0 || verDown != 0)
+            {
+                Player.ChangeOrientation(horDown, verDown);
+            }
+
+            var pos = Vector3.zero;
+            pos = Player.transform.position + Player.ModifiedOrientation;
+            
+            // Ищем объект перед нами
+            var interior = Player.GetComponentByLinecast<Interior>(pos);
+            if (interior != null)
+            {
+                if (interior is Chair)
+                {
+                    if ( !((Chair) interior).table.PlaceAvailable )
+                    {
+                        return this;
+                    }
+                }
+            }
+            
             PlayerState newState = base.Move(updateData);
             if (newState is BaseState)
             {
@@ -33,18 +58,35 @@ namespace Player.PlayerStates
             }
             // Если внутри BaseState изменилось состояние
             ChairState chairState = (ChairState) newState;
-            chairState.Chair.table.AddItem(item);
-            return chairState;
+            var table = chairState.Chair.table;
+            if (table.PlaceAvailable)
+            {
+                chairState.Chair.table.AddItem(item);
+                return chairState;
+            }
+
+            return this;
         }
 
         public override PlayerState Handle(UpdateData updateData)
         {
-            Debug.Log(string.Format("Handle {0}", item));
             var tableTop = Player.GetComponentByLinecast<TableTop>(
                 Player.transform.position + Player.ModifiedOrientation);
 
-            tableTop.AddItem(item);
-            return new BaseState(Player);
+            if (tableTop.PlaceAvailable)
+            {
+                tableTop.AddItem(item);
+                return new BaseState(Player);
+            }
+
+            return this;
+
+        }
+
+        public override PlayerState Extra(UpdateData updateData)
+        {
+            base.Extra(updateData);
+            return this;
         }
     }
 }

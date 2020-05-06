@@ -8,13 +8,13 @@ using Player.Controllers;
 
 namespace Player.PlayerStates
 {
-    public class BottleState : WithItemState
+    public class GlassState : WithItemState
     {
-        private Bottle Bottle;
-        public BottleState(PlayerController player, Bottle bottle) : base(player)
+        private Glass Glass;
+        public GlassState(PlayerController player,Glass glass) : base(player)
         {
-            item = bottle;
-            Bottle = bottle;
+            item = glass;
+            Glass = glass;
         }
 
         public override PlayerState Action(UpdateData updateData)
@@ -31,10 +31,10 @@ namespace Player.PlayerStates
                 actionItem = tableTop.TakeItemByDistance(Player.transform.position, false);
             }
 
-            if (actionItem is Glass)
+            if (actionItem is Bottle)
             {
-                Glass glass = (Glass) actionItem;
-                Bottle.PourOff(glass);
+                Bottle bottle = (Bottle) actionItem;
+                bottle.PourOff(Glass);
             }
             return this;
         }
