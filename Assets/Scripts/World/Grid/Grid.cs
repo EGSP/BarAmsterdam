@@ -11,21 +11,25 @@ namespace Grids
 {
     public class Grid<TObject>
     {
+        [OdinSerialize]
         /// <summary>
         /// Количество ячеек по горизонтали
         /// </summary>
         public int Width { get; private set; }
 
+        [OdinSerialize]
         /// <summary>
         ///  Количество ячеек по вертикали
         /// </summary>
         public int Height { get; private set; }
 
+        [OdinSerialize]
         /// <summary>
         ///  Размер ячейки по горизонтали
         /// </summary>
         public float CellSizeHorizontal { get; set; }
 
+        [OdinSerialize]
         /// <summary>
         /// Размер ячейки по вертикали
         /// </summary>
@@ -144,6 +148,28 @@ namespace Grids
             x = Mathf.FloorToInt(worldPos.x / CellSizeHorizontal);
             y = Mathf.FloorToInt(worldPos.y / CellSizeVertical);
         }
+        
+        /// <summary>
+        /// Находятся ли индексы в пределах сетки
+        /// </summary>
+        public bool InBounds(int x, int y)
+        {
+            if (x >= 0 && y >= 0 && x < Width && y < Height)
+                return true;
+
+            return false;
+        }
+        
+        /// <summary>
+        /// Находится ли мировая позиция в пределах сетки
+        /// </summary>
+        public bool InBounds(Vector3 worldPos)
+        {
+            int x, y;
+            WorldToIndex(worldPos,out x,out y);
+
+            return InBounds(x, y);
+        }
 
         //
         // Я сделал анонимные методы для того,
@@ -159,7 +185,7 @@ namespace Grids
         /// <param name="popAction">Выполняемый метод</param>
         public void PopObject(int x, int y, Action<TObject> popAction)
         {
-            if (x >= 0 && y >= 0 && x < Width && y < Height)
+            if (InBounds(x,y))
                 popAction(GridArray[x][y]);
         }
 
@@ -183,7 +209,7 @@ namespace Grids
         /// <param name="popAction">Передает кроме объекта индексы в сетке</param>
         public void PopObject(int x,int y, Action<int,int,TObject> popAction)
         {
-            if (x >= 0 && y >= 0 && x < Width && y < Height)
+            if (InBounds(x,y))
                 popAction(x, y, GridArray[x][y]);
         }
 
@@ -205,7 +231,7 @@ namespace Grids
         /// </summary>
         public TObject GetObject(int x,int y)
         {
-            if (x >= 0 && y >= 0 && x < Width && y < Height)
+            if (InBounds(x,y))
                 return GridArray[x][y];
 
             return default(TObject);
@@ -227,7 +253,7 @@ namespace Grids
         /// </summary>
         public void SetObject(int x,int y, TObject newObject)
         {
-            if (x >= 0 && y >= 0 && x < Width && y < Height)
+            if (InBounds(x,y))
             {
                 // Debug.Log($"{x},{y} : {Width},{Height} : {GridArray.Count},{GridArray[x].Count}");
                 GridArray[x][y] = newObject;

@@ -184,6 +184,7 @@ public partial class GridEditor: EditorWindow
                     .ContinueWith(t =>
                     {
                         sceneGrid.SetNavigationGrid(t.Result);
+                        SaveNavigationGrid(t.Result);
                         Debug.Log("Установка навигационной сетки завершена");
 
                         return t.Result;

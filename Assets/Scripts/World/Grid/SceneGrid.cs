@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using Grids;
 using TMPro;
 
+using Gasanov.Extensions;
 using Gasanov.SpeedUtils;
 using Gasanov.SpeedUtils.FileManagement;
+using Pathfinding;
 
 namespace World
 {
@@ -17,6 +19,7 @@ namespace World
         [SerializeField] private Material gridCellMaterial;
         // Настройки сетки
         [SerializeField] private SceneGridSettings gridSettings;
+        [SerializeField] private bool generateCellVisual;
         
         // Сетка визуального представления ячеек
         private Grid<GameObject> cellGrid;
@@ -26,18 +29,35 @@ namespace World
         
         // Сетка навигации
         private Grid<int> navigationGrid;
+        // Сетка для поиска пути
+        private LinkedJastar linkedJastar;
+        
+        
 
         private MaterialPropertyBlock propertyBlock;
+
+        private Couple<int, int> startSelected;
+        private Couple<int, int> goalSelected;
 
         private void Awake()
         {
             SetGridSettings(GridEditor.LoadGridSettings());
             
+            // First step
             CheckNavigationGrid();
             InitializeGameObjectHierarchy();
             
+            if(generateCellVisual)
+                GenerateCellVisual();
+            
+            // Second step
+            CreatePathfinding();
+            
             if(propertyBlock == null)
                 propertyBlock = new MaterialPropertyBlock();
+            
+            startSelected = new Couple<int, int>(-1,-1);
+            goalSelected = new Couple<int, int>(-1,-1);
         }
 
         private void Start()
@@ -47,6 +67,89 @@ namespace World
 
         private void Update()
         {
+            var mousePos = UtilsClass.GetMouseWorldPosition();
+
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                // Если уже было выделение
+                if (navigationGrid.InBounds(startSelected.Item1,startSelected.Item2))
+                {
+                    ChangeCellColor(startSelected.Item1,startSelected.Item2,
+                        Color.white);
+                    
+                    startSelected = new Couple<int, int>(-1,-1);
+                }
+
+                if (navigationGrid.InBounds(mousePos))
+                {
+                    int x, y;
+                    navigationGrid.WorldToIndex(mousePos,out x,out y);
+                    startSelected = new Couple<int, int>(x,y);
+                    
+                    if (goalSelected.Item1 == startSelected.Item1 && goalSelected.Item2 == startSelected.Item2)
+                    {
+                        startSelected = new Couple<int, int>(-1,-1);
+                    }
+                    else
+                    {
+                        ChangeCellColor(x,y, Color.blue);
+                    }
+                }
+            }
+
+            if (Input.GetKeyDown(KeyCode.Mouse1))
+            {
+                // Если уже было выделение
+                if (navigationGrid.InBounds(goalSelected.Item1,goalSelected.Item2))
+                {
+                    ChangeCellColor(goalSelected.Item1,goalSelected.Item2,
+                        Color.white);
+                    
+                    goalSelected = new Couple<int, int>(-1,-1);
+                }
+                
+                if (navigationGrid.InBounds(mousePos))
+                {
+                    int x, y;
+                    navigationGrid.WorldToIndex(mousePos,out x,out y);
+                    goalSelected = new Couple<int, int>(x,y);
+                    
+                    if (goalSelected.Item1 == startSelected.Item1 && goalSelected.Item2 == startSelected.Item2)
+                    {
+                        goalSelected = new Couple<int, int>(-1,-1);
+                    }
+                    else
+                    {
+                        ChangeCellColor(x,y, Color.cyan);
+                    }
+                }
+            }
+
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                if (startSelected.Item1 == -1 || startSelected.Item2 == -1)
+                    return;
+
+                if (goalSelected.Item1 == -1 || goalSelected.Item2 == -1)
+                    return;
+
+                var path = linkedJastar.FindPath(
+                    linkedJastar.Grid[startSelected.Item1][startSelected.Item2],
+                    linkedJastar.Grid[goalSelected.Item1][goalSelected.Item2]);
+
+                for (var i = 0; i < path.Count; i++)
+                {
+                    ChangeCellColor(path[i].X,path[i].Y,Color.magenta);
+                    UtilsClass.CreateWorldText($"{i}", transform,
+                        navigationGrid.GetWorldPosition(path[i].X, path[i].Y),5,Color.white);
+                }
+                
+            }
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                ResetHighlight();
+            }
         }
 
         private void OnDrawGizmos()
@@ -199,6 +302,20 @@ namespace World
             });
         }
 
+        public void ChangeCellColor(int x, int y, Color color)
+        {
+            if(propertyBlock == null)
+                propertyBlock = new MaterialPropertyBlock();
+            
+            propertyBlock.SetColor("_Color", color);
+            
+            cellGrid.PopObject(x,y, (t) =>
+            {
+                var renderer = t.GetComponent<Renderer>();
+                renderer.SetPropertyBlock(propertyBlock); 
+            });
+        }
+
         // Убирает подсветку
         public void ResetHighlight()
         {
@@ -290,6 +407,25 @@ namespace World
             }
         }
 
+        /// <summary>
+        /// Создает сетку поиска пути
+        /// </summary>
+        private void CreatePathfinding()
+        {
+            linkedJastar = new LinkedJastar(navigationGrid.Width,navigationGrid.Height);
+            navigationGrid.ForEach((x, y, t) =>
+            {
+                if (t == 0)
+                {
+                    linkedJastar.Grid[x][y].SetIsWalkableFalse();
+                }
+                else
+                {
+                    linkedJastar.Grid[x][y].SetIsWalkableTrue(t);
+                }
+            });
+        }
+
         public static async Task<Grid<int>> BakeNavigationGrid(LayerMask obstacles, SceneGridSettings gridSettings)
         {
                 Debug.Log("Начата генерация навигационной сетки");
@@ -312,6 +448,44 @@ namespace World
                 Debug.Log("Генерация навигационной сетки завершена");
 
                 return bakedGrid;
+        }
+
+        /// <summary>
+        /// Поиск пути от позиции старта до конечной позиции.
+        /// Возвращает null, если путь не был найден
+        /// </summary>
+        public List<Vector3> FindPath(Vector3 from, Vector3 to)
+        {
+            if (navigationGrid.InBounds(from) && navigationGrid.InBounds(to))
+            {
+                int x1, x2, y1, y2;
+                
+                // from
+                navigationGrid.WorldToIndex(from,out x1,out y1);
+                // to
+                navigationGrid.WorldToIndex(to,out x2,out y2);
+
+                var path = linkedJastar.FindPath(
+                    linkedJastar.Grid[x1][y1],
+                    linkedJastar.Grid[x2][y2]);
+
+                if (path != null)
+                {
+                    var vectorizedPath = new List<Vector3>(path.Count);
+
+                    for (var i = 0; i < path.Count; i++)
+                    {
+                        var point = path[i];
+                        vectorizedPath.Add(new Vector3(point.X,point.Y));
+                    }
+
+                    return vectorizedPath;
+                }
+
+                return null;
+            }
+
+            return null;
         }
     }
 }
