@@ -207,7 +207,7 @@ namespace Gasanov.SpeedUtils
 
         public void Update()
         {
-            OnUpdate(Time.deltaTime);
+            OnUpdate(UnityEngine.Time.deltaTime);
         }
     }
 }

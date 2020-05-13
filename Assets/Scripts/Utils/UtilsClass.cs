@@ -15,7 +15,15 @@ namespace Gasanov.SpeedUtils
     /// </summary>
     public static class UtilsClass
     {
-
+        /// <summary>
+        /// Создает текст в мировом пространстве
+        /// </summary>
+        public static TMP_Text CreateWorldText(string text, Color color)
+        {
+            return CreateWorldText(text,null,default(Vector3),5,
+                color);
+        }
+        
         /// <summary>
         /// Создает текст в мировом пространстве
         /// </summary>
