@@ -117,9 +117,14 @@ namespace Player.PlayerStates
             {
                 item = tableTop.TakeItemByDistance(Player.transform.position) as MonoItem;
             }
-            
-            item.transform.parent = Player.transform;
-            return item.GetPlayerState(Player);
+
+            if (item != null)
+            {
+                item.transform.parent = Player.transform;
+                return item.GetPlayerState(Player);
+            }
+
+            return this;
         }
 
         public override PlayerState Action(UpdateData updateData)

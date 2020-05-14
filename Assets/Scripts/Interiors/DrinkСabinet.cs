@@ -63,8 +63,8 @@ namespace Interiors
 
             if (monoItem != null)
             {
-                Destroy(monoItem.gameObject);        
                 Debug.Log($"{monoItem.name} has destroyed");
+                Destroy(monoItem.gameObject);        
             }
         }
     }
