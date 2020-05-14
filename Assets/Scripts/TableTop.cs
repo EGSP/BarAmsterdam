@@ -46,7 +46,7 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
     /// Добавляет предмет на стол в любую свободную ячейку
     /// </summary>
     /// <param name="item">Добавляемый предмет</param>
-    public void AddItem(IItem item)
+    public virtual void AddItem(MonoItem item)
     {
         var freePlace = places.FirstOrDefault(x => x.CurrentItem.ID == "NullItem");
 
@@ -83,19 +83,29 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
     /// Возвращает ближайший предмет со стола и удаляет из ячейки. Может вернуть NullItem
     /// </summary>
     /// <param name="initiatorPosition"></param>
-    public IItem TakeItemByDistance(Vector3 initiatorPosition)
+    public virtual MonoItem TakeItemByDistance(Vector3 initiatorPosition, bool remove = true)
     {
         // Вычисляем monoItem
         var takeablePlaces = places.Where(x => x.CurrentItem as MonoItem != null);
         if (takeablePlaces.Count() > 0)
         {
             var orderedPlaces = takeablePlaces.OrderBy(x => (x.Position - initiatorPosition).sqrMagnitude);
-            var item = orderedPlaces.First().RemoveItem();
 
-            return item;
+            IItem item;
+            if (remove)
+            {
+                item = orderedPlaces.First().RemoveItem();
+            }
+            else
+            {
+                item = orderedPlaces.First().CurrentItem;
+            }
+
+            return (MonoItem) item;
         }
 
-        return new NullItem();
+        // return new NullItem();
+        throw new Exception("You Can't take anything on this TableTop");
     }
 
     /// <summary>
@@ -104,12 +114,17 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
     /// </summary>
     /// <param name="item">Ссылка на нужный объект</param>
     /// <returns></returns>
-    public IItem TakeItemByReference(IItem item)
+    public IItem TakeItemByReference(IItem item, bool remove = true)
     {
         var coincidence = places.FirstOrDefault(x => x.CurrentItem == item);
 
         if (coincidence != null)
-            return coincidence.RemoveItem();
+        {
+            if(remove)
+                return coincidence.RemoveItem();
+
+            return coincidence.CurrentItem;
+        }
 
         return new NullItem();
     }
