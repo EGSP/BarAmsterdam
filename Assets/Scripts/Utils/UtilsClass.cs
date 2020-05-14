@@ -54,6 +54,7 @@ namespace Gasanov.SpeedUtils
             textPro.alignment = textAlignment;
 
 
+            textPro.enableWordWrapping = false;
             textPro.color = color;
 
 

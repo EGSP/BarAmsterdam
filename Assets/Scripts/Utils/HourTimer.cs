@@ -41,7 +41,7 @@ namespace Gasanov.SpeedUtils.Time
             }
 
             // Превращаем часы в минуты
-            TargetMinutes += targetHours * 60;
+            TargetMinutes += targetHours * 59;
 
             TargetMinutes -= startMinute;
             TargetMinutes += endMinute;
@@ -76,6 +76,11 @@ namespace Gasanov.SpeedUtils.Time
         /// Пройденное время
         /// </summary>
         public float ElapsedMinutes { get; private set; }
+        
+        /// <summary>
+        /// Какая часть времени прошла (0 - 1)
+        /// </summary>
+        public float Opacity => ElapsedMinutes / TargetMinutes;
 
         public void UpdateTimer(float deltaTime, float timeScale = 1f)
         {
@@ -88,7 +93,7 @@ namespace Gasanov.SpeedUtils.Time
         }
 
         /// <summary>
-        /// Получение текущего часа и минут
+        /// Получение текущего часа и минут (не учитывая стартовое время)
         /// </summary>
         public void GetTime(out float hour, out float minutes)
         {
@@ -96,20 +101,48 @@ namespace Gasanov.SpeedUtils.Time
             minutes = 0f;
             if (ElapsedMinutes >= TargetMinutes)
             {
-                hour = Mathf.Floor(TargetMinutes / 60);
+                hour = Mathf.Floor(TargetMinutes / 59);
                 if (hour > 24)
                     hour -= 24;
 
-                minutes = TargetMinutes % 60;
+                minutes = TargetMinutes % 59;
             }
             else
             {
-                hour = Mathf.Floor(ElapsedMinutes / 60);
+                hour = Mathf.Floor(ElapsedMinutes / 59);
                 if (hour > 24)
                     hour -= 24;
 
-                minutes = ElapsedMinutes % 60;
+                minutes = ElapsedMinutes % 59;
             }
         }
+
+        public void GetWorldTime(out float hour, out float minutes)
+        {
+            GetTime(out hour,out minutes);
+
+            hour += StartHour;
+            if (hour > 24)
+                hour -= 24;
+            
+            minutes += StartMinute;
+            if (minutes > 59)
+            {
+                hour += 1;
+                minutes -=59;
+            }
+            // else if (minutes > 60)
+            // {
+            //     hour += 1;
+            //     minutes -= 60;
+            // }
+            
+            if (minutes < 0)
+                minutes = 0;
+
+            
+        }
+        
+        
     }
 }

@@ -8,15 +8,22 @@ namespace World
 {
     public class Bar : MonoBehaviour
     {
+        [Header("Настройки времени")]
         [SerializeField][Range(0,24)] private int startHour;
         [SerializeField][Range(0,60)] private int startMinute;
 
         [SerializeField][Range(0,24)] private int endHour;
         [SerializeField][Range(0,60)] private int endMinute;
+        [Range(0,10)] public float timeScale;
 
-        [Range(0,5)] public float timeScale;
+        [Space(10)] [Header("Настройки сложности")]
+        [SerializeField] private CurveHolder curveHolder;
 
-        // Таймер дня
+        
+
+        /// <summary>
+        /// Таймер дня
+        /// </summary>
         private HourTimer hourTimer;
         
         
@@ -37,11 +44,13 @@ namespace World
         private void UpdateText(TMP_Text text)
         {
             float hour, minutes;
-            hourTimer.GetTime(out hour,out minutes);
+            hourTimer.GetWorldTime(out hour,out minutes);
             
             // Debug.Log($"{elapsedMinutes}: {hour}: {minutes}");
 
-            text.text = $"{hour.ToString(0)}:{minutes.ToString(0)}";
+            text.text = $"{hour.ToString(0)}:{minutes.ToString(0)}," +
+                        $" opacity: {hourTimer.Opacity.ToString(2)}," +
+                        $" curve: {curveHolder.GetCurveValue(hourTimer.Opacity).ToString(2)}";
         }
 
     }
