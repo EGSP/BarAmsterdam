@@ -115,7 +115,7 @@ namespace Player.Controllers
         // Update is called once per frame
         void Update()
         {
-            updateData.deltaTime = Time.deltaTime;
+            updateData.DeltaTime = Time.deltaTime;
             CurrentPlayerState = CurrentPlayerState.UpdateState(updateData);
             // Debug.Log(CurrentPlayerState);
         }

@@ -24,8 +24,10 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
     /// Вызывается при изменении коллекции
     /// </summary>
     public event Action OnCollectionChanged = delegate { };
-
-
+    
+    /// <summary>
+    /// Существует ли свободное место для предмета
+    /// </summary>
     public bool PlaceAvailable
     {
         get
@@ -46,7 +48,7 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
     /// Добавляет предмет на стол в любую свободную ячейку
     /// </summary>
     /// <param name="item">Добавляемый предмет</param>
-    public virtual void AddItem(MonoItem item)
+    public virtual void AddItem(IItem item)
     {
         var freePlace = places.FirstOrDefault(x => x.CurrentItem.ID == "NullItem");
 
@@ -82,30 +84,23 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
     /// <summary>
     /// Возвращает ближайший предмет со стола и удаляет из ячейки. Может вернуть NullItem
     /// </summary>
-    /// <param name="initiatorPosition"></param>
-    public virtual MonoItem TakeItemByDistance(Vector3 initiatorPosition, bool remove = true)
+    public virtual IItem TakeItemByDistance(Vector3 initiatorPosition)
     {
         // Вычисляем monoItem
         var takeablePlaces = places.Where(x => x.CurrentItem as MonoItem != null);
         if (takeablePlaces.Count() > 0)
         {
-            var orderedPlaces = takeablePlaces.OrderBy(x => (x.Position - initiatorPosition).sqrMagnitude);
+            var orderedPlaces = takeablePlaces.OrderBy(x
+                => (x.Position - initiatorPosition).sqrMagnitude);
+            var item = orderedPlaces.First().RemoveItem();
 
-            IItem item;
-            if (remove)
-            {
-                item = orderedPlaces.First().RemoveItem();
-            }
-            else
-            {
-                item = orderedPlaces.First().CurrentItem;
-            }
-
-            return (MonoItem) item;
+            return item;
         }
 
-        // return new NullItem();
-        throw new Exception("You Can't take anything on this TableTop");
+        return new NullItem();
+        
+        // Ошибку можно было бы вернуть, если бы мы могли узнать про существование MonoItems на столе
+        // throw new Exception("There is no MonoItem on this TableTop");
     }
 
     /// <summary>
@@ -114,17 +109,46 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
     /// </summary>
     /// <param name="item">Ссылка на нужный объект</param>
     /// <returns></returns>
-    public IItem TakeItemByReference(IItem item, bool remove = true)
+    public IItem TakeItemByReference(IItem item)
     {
         var coincidence = places.FirstOrDefault(x => x.CurrentItem == item);
 
         if (coincidence != null)
-        {
-            if(remove)
-                return coincidence.RemoveItem();
+            return coincidence.RemoveItem();
 
-            return coincidence.CurrentItem;
+        return new NullItem();
+    }
+
+    /// <summary>
+    /// Возвращает ссылку на ближайший предмет. Может вернуть NullItem
+    /// </summary>
+    public IItem PopTakeableItemByDistance(Vector3 initiatorPosition)
+    {
+        // Вычисляем monoItem
+        var takeablePlaces = places.Where(x => x.CurrentItem as MonoItem != null);
+        if (takeablePlaces.Count() > 0)
+        {
+            var orderedPlaces = takeablePlaces.OrderBy(x 
+                => (x.Position - initiatorPosition).sqrMagnitude);
+            var item = orderedPlaces.First().CurrentItem;
+
+            return item;
         }
+
+        return new NullItem();
+    }
+
+    /// <summary>
+    /// Возвращает предмет указывающий на тот же объект, что и item. Может вернуть NullItem.
+    /// Возвращенный предмет НЕ удаляется со стола
+    /// </summary>
+    /// <param name="item">Ссылка на нужный объект</param>
+    public IItem PopItemByReference(IItem item)
+    {
+        var coincidence = places.FirstOrDefault(x => x.CurrentItem == item);
+
+        if (coincidence != null)
+            return coincidence.CurrentItem;
 
         return new NullItem();
     }
@@ -133,7 +157,6 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
     /// Возвращает ссылку на найденый по идентификатору предмет. Может вернуть NullItem.
     /// </summary>
     /// <param name="itemID"></param>
-    /// <returns></returns>
     public IItem FindItemByID(string itemID)
     {
         var coincidence = places.FirstOrDefault(x => x.CurrentItem.ID == itemID);

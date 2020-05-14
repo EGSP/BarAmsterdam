@@ -4,12 +4,13 @@ using Player;
 using Player.PlayerStates;
 using Player.Controllers;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Interiors
 {
     public class Chair : Interior
     {
-        [SerializeField] private bool AutoOrientation = true;
+        [FormerlySerializedAs("AutoOrientation")] [SerializeField] private bool autoOrientation = true;
 
         /// <summary>
         /// Ориентация по вертикали от -1 до 1
@@ -64,7 +65,7 @@ namespace Interiors
 
         public void Start()
         {
-            if(AutoOrientation)
+            if(autoOrientation)
                 SetOrientation();
         }
     }

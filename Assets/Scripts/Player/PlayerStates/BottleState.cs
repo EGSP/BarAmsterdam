@@ -19,21 +19,23 @@ namespace Player.PlayerStates
 
         public override PlayerState Action(UpdateData updateData)
         {
-            var cursor = updateData.cursor;
+            var cursor = Player.TableCursor;
             var tableTop = Player.GetComponentByLinecast<TableTop>(
                 Player.transform.position + Player.ModifiedOrientation);
 
             MonoItem actionItem;
-            if(cursor.IsActive)
-                actionItem = (MonoItem) tableTop.TakeItemByReference(cursor.getItem(), false);
+            if (cursor.IsActive)
+            {
+                actionItem = tableTop.PopItemByReference(cursor.GetSelectedItem()) as MonoItem;
+            }
             else
             {
-                actionItem = tableTop.TakeItemByDistance(Player.transform.position, false);
+                actionItem = tableTop.PopTakeableItemByDistance(Player.transform.position) as MonoItem;
             }
 
-            if (actionItem is Glass)
+            var glass = actionItem as Glass;
+            if (glass != null)
             {
-                Glass glass = (Glass) actionItem;
                 Bottle.PourOff(glass);
             }
             return this;

@@ -35,7 +35,6 @@ namespace Player.PlayerStates
         /// <param name="updateData">Данные для обновления</param>
         public PlayerState UpdateState(UpdateData updateData)
         {
-            updateData.cursor = Player.TableCursor;
             // Нажатие на кнопку Z
             if (DeviceInput.GetHandleButtonDown())
             {
@@ -55,10 +54,10 @@ namespace Player.PlayerStates
             }
             
             
-            updateData.hor = (int)DeviceInput.GetHorizontalAxis();
-            updateData.ver = (int)DeviceInput.GetVerticalAxis();
-            updateData.horDown = (int)DeviceInput.GetHorizontalAxisDown();
-            updateData.verDown = (int)DeviceInput.GetVerticalAxisDown();
+            updateData.HorizontalAxisInput = (int)DeviceInput.GetHorizontalAxis();
+            updateData.VerticalAxisInput = (int)DeviceInput.GetVerticalAxis();
+            updateData.HorizontalAxisDownInput = (int)DeviceInput.GetHorizontalAxisDown();
+            updateData.VerticalAxisDownInput = (int)DeviceInput.GetVerticalAxisDown();
             
             return Move(updateData);
         }
@@ -72,14 +71,12 @@ namespace Player.PlayerStates
 
     public class UpdateData
     {
-        public float deltaTime;
+        public float DeltaTime;
         
-        public TableTopCursor cursor;
+        public int HorizontalAxisInput;
+        public int VerticalAxisInput;
         
-        public int hor;
-        public int ver;
-        
-        public int horDown;
-        public int verDown;
+        public int HorizontalAxisDownInput;
+        public int VerticalAxisDownInput;
     }
 }

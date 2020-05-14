@@ -43,10 +43,10 @@ namespace Player.PlayerStates
         public override PlayerState Move(UpdateData updateData)
         {
             // Удерживание кнопки
-            int hor = updateData.hor;
-            int ver = updateData.ver;
+            int hor = updateData.HorizontalAxisInput;
+            int ver = updateData.VerticalAxisInput;
 
-            var cursor = updateData.cursor;
+            var cursor = Player.TableCursor;
 
             // Если есть удержание по одной из осей
             if (hor != 0 || ver != 0)
@@ -84,8 +84,8 @@ namespace Player.PlayerStates
             }
 
             // Нажатие на кнопку
-            int horDown = updateData.horDown;
-            int verDown = updateData.verDown;
+            int horDown = updateData.HorizontalAxisDownInput;
+            int verDown = updateData.VerticalAxisDownInput;
 
             // Если нажали на одну из кнопок
             if(horDown != 0 || verDown != 0)
@@ -103,20 +103,20 @@ namespace Player.PlayerStates
 
         public override PlayerState Handle(UpdateData updateData)
         {
-            var cursor = updateData.cursor;
+            var cursor = Player.TableCursor;
             var tableTop = Player.GetComponentByLinecast<TableTop>(
                 Player.transform.position + Player.ModifiedOrientation);
 
             Debug.Log(cursor.IsActive);
             MonoItem item;
-            
-            if(cursor.IsActive)
-                item = (MonoItem) tableTop.TakeItemByReference(cursor.getItem());
+            if (cursor.IsActive)
+            {
+                item = tableTop.TakeItemByReference(cursor.GetSelectedItem()) as MonoItem;
+            }
             else
             {
-                item = tableTop.TakeItemByDistance(Player.transform.position);
+                item = tableTop.TakeItemByDistance(Player.transform.position) as MonoItem;
             }
-            
             
             item.transform.parent = Player.transform;
             return item.GetPlayerState(Player);
@@ -131,12 +131,13 @@ namespace Player.PlayerStates
 
         public override PlayerState Extra(UpdateData updateData)
         {
-            var cursor = updateData.cursor;
+            var cursor = Player.TableCursor;
             
             // Если курсор ни на что не указывает
             if(cursor.IsActive == false)
             {
-                var cursorEnumerable = Player.GetComponentByLinecast<ICursorEnumerable>(Player.transform.position + Player.ModifiedOrientation);
+                var cursorEnumerable = Player.GetComponentByLinecast<ICursorEnumerable>
+                    (Player.transform.position + Player.ModifiedOrientation);
 
                 if(cursorEnumerable != null)
                 {

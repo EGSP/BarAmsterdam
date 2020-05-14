@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Items.MonoItems;
 using UnityEngine;
 
 namespace Player.PlayerCursors
@@ -61,6 +62,18 @@ namespace Player.PlayerCursors
         public void Cancel()
         {
             cursor.gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// Возвращает выделенный предмет. Может вернуть null
+        /// </summary>
+        /// <returns></returns>
+        public MonoItem GetSelectedItem()
+        {
+            if (CursorEnumerator.Count == 0)
+                return null;
+
+            return CursorEnumerator.Current;
         }
     }
 }

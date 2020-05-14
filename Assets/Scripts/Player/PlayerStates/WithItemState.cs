@@ -26,8 +26,8 @@ namespace Player.PlayerStates
         public override PlayerState Move(UpdateData updateData)
         {
             // Проверка можно ли сесть за стул (полный ли стол?)
-            int horDown = updateData.horDown;
-            int verDown = updateData.verDown;
+            int horDown = updateData.HorizontalAxisDownInput;
+            int verDown = updateData.VerticalAxisDownInput;
 
             // Если нажали на одну из кнопок
             if (horDown != 0 || verDown != 0)
