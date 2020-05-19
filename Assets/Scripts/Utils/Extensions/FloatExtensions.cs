@@ -1,4 +1,4 @@
-﻿namespace Gasanov.SpeedUtils
+﻿namespace Gasanov.Extensions
 {
     public static class FloatExtensions
     {

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using Gasanov.SpeedUtils;
+using Gasanov.SpeedUtils.MeshUtilities;
+
 public class MeshTesting : MonoBehaviour
 {
     [SerializeField] private Material defaultMaterial;

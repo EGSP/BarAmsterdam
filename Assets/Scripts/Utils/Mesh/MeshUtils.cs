@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Gasanov.SpeedUtils
+namespace Gasanov.SpeedUtils.MeshUtilities
 {
     public static class MeshUtils
     {
