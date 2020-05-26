@@ -36,7 +36,7 @@ namespace Player.PlayerStates
             var glass = actionItem as Glass;
             if (glass != null)
             {
-                Bottle.PourOff(glass);
+                Bottle.FillGlass(glass);
             }
             return this;
         }

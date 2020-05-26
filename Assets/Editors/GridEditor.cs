@@ -12,7 +12,7 @@ using UnityEditor.UIElements;
 using World;
 using UnityEngine.UIElements;
 
-public partial class GridEditor: EditorWindow
+public class GridEditor: EditorWindow
 {
     private static readonly string DataPath = "GridEditorData/";
 

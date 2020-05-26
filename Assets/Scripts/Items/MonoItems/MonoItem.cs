@@ -7,19 +7,19 @@ using Player.Controllers;
 namespace Items.MonoItems
 {
     /// <summary>
-    /// Класс предмета
+    /// РљР»Р°СЃСЃ РїСЂРµРґРјРµС‚Р°
     /// </summary>
     public abstract class MonoItem : MonoBehaviour, IItem
     {
         /// <summary>
-        /// Идентификатор предмета
+        /// РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РїСЂРµРґРјРµС‚Р°
         /// </summary>
-        public string ID { get => id; }
-        [SerializeField] private string id;
+        public virtual string ID { get => id; }
+        [SerializeField] protected string id;
         
 
         /// <summary>
-        /// Получение нового состояния для игрока, требуемое этим интерьером
+        /// РџРѕР»СѓС‡РµРЅРёРµ РЅРѕРІРѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ РґР»СЏ РёРіСЂРѕРєР°, С‚СЂРµР±СѓРµРјРѕРµ СЌС‚РёРј РёРЅС‚РµСЂСЊРµСЂРѕРј
         /// </summary>
         public abstract PlayerState GetPlayerState(PlayerController playerController);
     }

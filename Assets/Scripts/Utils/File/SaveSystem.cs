@@ -5,6 +5,7 @@ using UnityEngine;
 
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using OdinSerializer;
 
 namespace Gasanov.SpeedUtils.FileManagement
@@ -232,6 +233,102 @@ namespace Gasanov.SpeedUtils.FileManagement
             if (loadedObject == null) return default(TObject);
             
             return loadedObject;
+        }
+
+        /// <summary>
+        /// Сохраняет значение в файл.
+        /// </summary>
+        /// <param name="fileName">Название файла</param>
+        /// <param name="additionalPath">Путь к файлу</param>
+        /// <param name="property">Значение</param>
+        /// <param name="propertyName">Название значения</param>
+        /// <param name="overwrite"></param>
+        public static void SaveProperty(string fileName, string additionalPath,
+            string property, string propertyName, bool overwrite = true)
+        {
+            Initialize();
+            
+            if (!Directory.Exists(SaveFolder + additionalPath))
+                Directory.CreateDirectory(SaveFolder + additionalPath);
+
+            if (!File.Exists(SaveFolder + additionalPath + fileName + SaveExtension))
+                File.Create(SaveFolder + additionalPath + fileName + SaveExtension).Close();
+            
+            // basic pattern for properties ((chance)\s*:\s*([-+]?[0-9]*\.?[0-9]+)\s*;)
+            var regex = new Regex($"({propertyName})\\s*:\\s*([-+]?[0-9]*\\,?[0-9]+)\\s*;");
+
+            var fileData = File.ReadAllText(SaveFolder + additionalPath + fileName + SaveExtension);
+            
+            if (overwrite)
+            {
+                // Находим значение с таким же названием и заменяем значение
+                var match = regex.Match(fileData);
+                if (match.Success)
+                {
+                    fileData.Remove(match.Index, match.Length);
+                    fileData.Insert(match.Index, $"{propertyName}:{property}");
+                }
+                else
+                {
+                    fileData += $"{propertyName}:{property};";
+                }
+            }
+            else
+            {
+                fileData += $"{propertyName}:{property};";
+            }
+            
+            File.WriteAllText(SaveFolder + additionalPath + fileName + SaveExtension,fileData);
+        }
+
+        /// <summary>
+        /// Загружает значение из указанного файла. В случае провала загрузки Match будет иметь свойство Success == false
+        /// </summary>
+        /// <param name="fileName">Название файла</param>
+        /// <param name="additionalPath">Путь к файлу</param>
+        /// <param name="regexPattern">Шаблон выражения</param>
+        /// <returns></returns>
+        public static T LoadProperty<T>(string fileName, string additionalPath, string propertyName,
+            bool createDefault = false)
+        {
+            // Если файла не существует
+            if (!File.Exists(SaveFolder + additionalPath + fileName + SaveExtension))
+            {
+                // Создаем пустышку
+                if(createDefault)
+                    SaveProperty(fileName,additionalPath,default(T).ToString(),
+                        propertyName,true);
+                
+                // Возвращаем результат провала загрузки
+                return default(T);
+            }
+            else
+            {
+                var fileData =  File.ReadAllText(SaveFolder + additionalPath + fileName + SaveExtension);
+
+                var match = Regex.Match(fileData,
+                    $"({propertyName})\\s*:\\s*([-+]?[0-9]*\\,?[0-9]+)\\s*;");
+
+                // Проверка успеха поиска
+                if (match.Success)
+                {
+                    return ChangeType<T>(match.Groups[2].Value);
+                }
+                else
+                {
+                    // Создаем пустышку
+                    if(createDefault)
+                        SaveProperty(fileName,additionalPath,default(T).ToString(),
+                            propertyName,true);
+                    
+                    return default(T);
+                }
+            }
+        }
+        
+        public static T ChangeType<T>(this object obj)
+        {
+            return (T)Convert.ChangeType(obj, typeof(T));
         }
 
     }
