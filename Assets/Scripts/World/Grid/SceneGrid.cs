@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System.Threading.Tasks;
+using Gasanov.Exceptions;
 using Grids;
 using TMPro;
 
@@ -16,6 +17,7 @@ namespace World
 {
     public class SceneGrid : MonoBehaviour
     {
+        public static SceneGrid Instance;
         
         [SerializeField] private Material gridCellMaterial;
         // Настройки сетки
@@ -42,6 +44,11 @@ namespace World
 
         private void Awake()
         {
+            if(Instance != null)
+                throw new SingletonException<SceneGrid>(this);
+
+            Instance = this;
+            
             SetGridSettings(GridEditor.LoadGridSettings());
             
             // First step

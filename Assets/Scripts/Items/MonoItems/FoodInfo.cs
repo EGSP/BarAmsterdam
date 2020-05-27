@@ -34,7 +34,7 @@ public class FoodInfo: MonoBehaviour
             var price = SaveSystem.LoadProperty<float>(prefab.ID, DataPath,"price",
                 true);
             var chance = SaveSystem.LoadProperty<float>(prefab.ID, DataPath, "chance",
-                true)+i*10;
+                true);
             
             drinksData.Add(new Tuple<Drink, float, float>(prefab,price,chance));
            

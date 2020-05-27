@@ -1,4 +1,5 @@
 ﻿using System;
+using Gasanov.Exceptions;
 using Gasanov.Extensions;
 using Gasanov.SpeedUtils;
 using Gasanov.SpeedUtils.Time;
@@ -7,8 +8,11 @@ using UnityEngine;
 
 namespace World
 {
+    [RequireComponent(typeof(FoodInfo))]
     public class Bar : MonoBehaviour
     {
+        public static Bar Instance;
+        
         [Header("Настройки времени")]
         [SerializeField][Range(0,24)] private int startHour;
         [SerializeField][Range(0,60)] private int startMinute;
@@ -20,13 +24,24 @@ namespace World
         [Space(10)] [Header("Настройки сложности")]
         [SerializeField] private CurveHolder curveHolder;
 
-        
+        public FoodInfo FoodInformation { get; private set; }
 
         /// <summary>
         /// Таймер дня
         /// </summary>
         private HourTimer hourTimer;
-        
+
+        private void Awake()
+        {
+            if(Instance != null)
+                throw new SingletonException<Bar>(this);
+            
+            Instance = this;
+
+            FoodInformation = GetComponent<FoodInfo>();
+            if(FoodInformation == null)
+                throw new NullReferenceException();
+        }
         
         private void Start()
         {
