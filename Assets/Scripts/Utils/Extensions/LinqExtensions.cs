@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Gasanov.Extensions
 {
@@ -54,6 +55,16 @@ namespace Gasanov.Extensions
                 index++;
             }
             return minIndex;
+        }
+
+        /// <summary>
+        /// Возвращает случайный элемент
+        /// </summary>
+        public static T Random<T>(this IEnumerable<T> collection)
+        {
+            var randomIndex = new System.Random().Next(0,collection.Count());
+
+            return collection.ElementAt(randomIndex);
         }
     }
 }

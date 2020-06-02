@@ -60,12 +60,12 @@ namespace Bots
         }
 
         /// <summary>
-        /// Добавляет новую цель в последовательность
+        /// Добавляет новую цель в цепочку
         /// </summary>
         /// <param name="nextGoal"></param>
         public void AppendGoal(Goal nextGoal)
         {
-            CurrentGoal.Join(nextGoal);
+            CurrentGoal.Append(nextGoal);
         }
     }
 }

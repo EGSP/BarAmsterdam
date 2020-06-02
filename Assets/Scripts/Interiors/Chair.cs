@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Player;
 using Player.PlayerStates;
@@ -13,6 +14,16 @@ namespace Interiors
         [FormerlySerializedAs("AutoOrientation")] [SerializeField] private bool autoOrientation = true;
 
         /// <summary>
+        /// Запрошен ли стул кем-то
+        /// </summary>
+        public bool Requested { get; set; }
+        
+        /// <summary>
+        /// Серийный идентификатор или просто номер стула
+        /// </summary>
+        public int SerialId { get; private set; }
+        
+        /// <summary>
         /// Ориентация по вертикали от -1 до 1
         /// </summary>
         public int verOrientation { get; private set; } = 0;
@@ -24,6 +35,11 @@ namespace Interiors
 
         public TableTop table;
 
+        /// <summary>
+        /// Вызывается методом KickSitting, когда нужно выгнать сидящего
+        /// </summary>
+        public event Action OnKickSitting = delegate {  };
+        
         public override PlayerState GetPlayerState(PlayerController playerController)
         {
             return new ChairState(playerController, this);
@@ -67,6 +83,19 @@ namespace Interiors
         {
             if(autoOrientation)
                 SetOrientation();
+        }
+
+        /// <summary>
+        /// Выгнать сидящего
+        /// </summary>
+        public void KickSitting()
+        {
+            OnKickSitting();
+        }
+
+        public void SetSerialId(int newSerialId)
+        {
+            SerialId = newSerialId;
         }
     }
 }

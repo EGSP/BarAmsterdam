@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Gasanov.Exceptions;
 using Gasanov.Extensions;
 using Gasanov.SpeedUtils;
+using Gasanov.SpeedUtils.RandomUtilities;
 using Gasanov.SpeedUtils.Time;
+using Interiors;
 using TMPro;
 using UnityEngine;
 
@@ -25,6 +29,14 @@ namespace World
         [SerializeField] private CurveHolder curveHolder;
 
         public FoodInfo FoodInformation { get; private set; }
+        
+        /// <summary>
+        /// Все стулья бара
+        /// </summary>
+        public List<Chair> Chairs { get; private set; }
+
+        private RandomList<Chair> freeChairs;
+        
 
         /// <summary>
         /// Таймер дня
@@ -67,6 +79,88 @@ namespace World
             text.text = $"{hour.ToString(0)}:{minutes.ToString(0)}," +
                         $" opacity: {hourTimer.Opacity.ToString(2)}," +
                         $" curve: {curveHolder.GetCurveValue(hourTimer.Opacity).ToString(2)}";
+        }
+
+
+        /// <summary>
+        /// Установка стульев. Стульям присваивается номер и выгоняются сидящие.
+        /// </summary>
+        public void SetupChairs()
+        {
+            Chairs = FindObjectsOfType<Chair>().ToList();
+            freeChairs = new RandomList<Chair>(new List<Chair>());
+
+            for (var i = 0; i < Chairs.Count; i++)
+            {
+                var chair = Chairs[i];
+                chair.SetSerialId(i);
+                chair.KickSitting();
+                chair.Requested = false;
+            }
+        }
+
+        /// <summary>
+        /// Запрос свободного стула. Если стульев нет, то будет возвращено null
+        /// </summary>
+        /// <returns></returns>
+        public Chair RequestFreeChair()
+        {
+            var chair = freeChairs.Next();
+
+            if (chair == null)
+                return null;
+
+            chair.Requested = true;
+            return chair;
+        }
+
+        /// <summary>
+        /// Запрос свободного стула. Если совпадений нет, то будет возвращено null.
+        /// Если стул занят, то будет вызван метод KickSitting
+        /// </summary>
+        /// <param name="serialId">Номер стула в баре</param>
+        /// <returns></returns>
+        public Chair RequestChairBySerialId(int serialId)
+        {
+            var chair = Chairs.FirstOrDefault(x => x.SerialId == serialId);
+
+            if (chair == null)
+                return null;
+            
+            chair.KickSitting();
+            chair.Requested = true;
+            return chair;
+        }
+
+        /// <summary>
+        /// Добавление освободившегося стула
+        /// </summary>
+        public void ReturnReleasedChair(Chair chair)
+        {
+            chair.Requested = false;
+            freeChairs.TemporaryCollection.Add(chair);
+        }
+
+        /// <summary>
+        /// Возвращает путь до стула. Если пути нет, то будет возвращено null
+        /// </summary>
+        /// <param name="selfPosition">Позиция ищущего</param>
+        /// <param name="chair">Искомый стул</param>
+        /// <returns></returns>
+        public List<Vector3> GetPathToChair(Vector3 selfPosition, Chair chair)
+        {
+            var path = SceneGrid.Instance.FindPath(selfPosition, chair.transform.position);
+            return path;
+        }
+
+        /// <summary>
+        /// Возвращает случайный путь по бару. Может вернуть null
+        /// </summary>
+        public List<Vector3> GetFreeroamPath(Vector3 selfPosition)
+        {
+            var chair = Chairs.Random();
+            var path = SceneGrid.Instance.FindPath(selfPosition, chair.transform.position);
+            return path;
         }
 
     }
