@@ -61,21 +61,21 @@ namespace Player.PlayerStates
                     if (hor > 0)
                     {
                         Player.SpriteRenderer.flipX = false;
-                        Player.Animator.Play("MoveRight");
+                        Player.PlayAnimation("MoveRight");
                     }
                         
                     else if (hor < 0)
                     {
                         Player.SpriteRenderer.flipX = true;
-                        Player.Animator.Play("MoveRight");
+                        Player.PlayAnimation("MoveRight");
                     }
                     else if (ver > 0)
                     {
-                        Player.Animator.Play("MoveUp");
+                        Player.PlayAnimation("MoveUp");
                     }
                     else if (ver < 0)
                     {
-                        Player.Animator.Play("MoveDown");
+                        Player.PlayAnimation("MoveDown");
                     }
                 }
                 
@@ -107,7 +107,14 @@ namespace Player.PlayerStates
             var tableTop = Player.GetComponentByLinecast<TableTop>(
                 Player.transform.position + Player.ModifiedOrientation);
 
-            Debug.Log(cursor.IsActive);
+            // Если стола рядом нет
+            if (tableTop == null)
+            {
+                NoTableTopWarning();
+                return this;
+            }
+
+            Debug.Log($"Cursor active: {cursor.IsActive}");
             MonoItem item;
             if (cursor.IsActive)
             {
@@ -160,6 +167,19 @@ namespace Player.PlayerStates
             }
 
             return this;
+        }
+        
+        /// <summary>
+        /// Сообщить об отсутствии стола
+        /// </summary>
+        public void NoTableTopWarning()
+        {
+            Debug.Log("По направлению взгляда нет стола");
+        }
+
+        public void NoIteractItemWarning(Type type)
+        {
+            Debug.Log($"Не найден предмет для взаимодействия: {type.ToString()}");
         }
     }
 }

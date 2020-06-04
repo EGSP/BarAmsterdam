@@ -73,9 +73,15 @@ namespace Player.PlayerStates
             var tableTop = Player.GetComponentByLinecast<TableTop>(
                 Player.transform.position + Player.ModifiedOrientation);
 
+            if (tableTop == null)
+            {
+                NoTableTopWarning();
+                return this;
+            }
+
             if (tableTop.PlaceAvailable)
             {
-                tableTop.AddItem(item);
+                tableTop.AddItemToNearest(item,Player.transform.position);
                 return new BaseState(Player);
             }
 
@@ -88,5 +94,7 @@ namespace Player.PlayerStates
             base.Extra(updateData);
             return this;
         }
+
+        
     }
 }

@@ -22,5 +22,20 @@ namespace Items.MonoItems
         /// Получение нового состояния для игрока, требуемое этим интерьером
         /// </summary>
         public abstract PlayerState GetPlayerState(PlayerController playerController);
+
+        protected virtual void Awake()
+        {
+            
+        }
+
+        protected virtual void Start()
+        {
+            
+        }
+
+        protected virtual void Update()
+        {
+            
+        }
     }
 }

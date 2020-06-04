@@ -23,6 +23,12 @@ namespace Player.PlayerStates
             var tableTop = Player.GetComponentByLinecast<TableTop>(
                 Player.transform.position + Player.ModifiedOrientation);
 
+            if (tableTop == null)
+            {
+                NoTableTopWarning();
+                return this;
+            }
+
             MonoItem actionItem;
             if (cursor.IsActive)
             {
@@ -37,6 +43,10 @@ namespace Player.PlayerStates
             if (bottle != null)
             {
                 bottle.FillGlass(Glass);
+            }
+            else
+            {
+                NoIteractItemWarning(typeof(Bottle));
             }
             return this;
         }

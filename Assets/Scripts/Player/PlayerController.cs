@@ -6,6 +6,8 @@ using Player.PlayerStates;
 using Player.PlayerCursors;
 using Interiors;
 
+// TODO: Добавить метод обновления камеры. 
+// TODO: Сделать вызов обновления камеры при любом перемещении. 
 namespace Player.Controllers
 {
     public class PlayerController : MonoBehaviour
@@ -51,6 +53,8 @@ namespace Player.Controllers
         /// </summary>
         public SpriteRenderer SpriteRenderer { get => spriteRenderer; private set => spriteRenderer = value; }
         [SerializeField] private SpriteRenderer spriteRenderer;
+
+        [SerializeField] private CameraFollow cameraFollow;
 
         /// <summary>
         /// Инвертированное время используемое для передвижения
@@ -98,10 +102,19 @@ namespace Player.Controllers
         private void Awake()
         {
             if (Animator == null)
-                Animator = GetComponent<Animator>();
+                Animator = GetComponentInChildren<Animator>();
 
             if (SpriteRenderer == null)
-                SpriteRenderer = GetComponent<SpriteRenderer>();
+                SpriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+            if (cameraFollow == null)
+            {
+                Debug.Log("Камера игрока не установлена в PlayerController");
+            }
+            else
+            {
+                cameraFollow.Target = transform;
+            }
                 
             if (TableCursor == null)
                 throw new System.Exception("TableCursor is null in PlayerController.cs. Set TableCursor component on PlayerController gameobject");
@@ -155,7 +168,7 @@ namespace Player.Controllers
                 {
                     //// Смена ориентации
                     //ChangeOrientation(horizontalInput, verticalInput);
-                    ChangeOrientation(horizontalInput, 0);
+                    ChangeOrientation(horizontalInput, verticalInput);
 
                     
                     newPosition += horizontalDir;
@@ -178,7 +191,7 @@ namespace Player.Controllers
             verticalInput *= (1 - verObstacleExist);
 
             // Смена ориентации
-            ChangeOrientation(horizontalInput, verticalInput);
+            ChangeOrientation(horizontalInput, 0);
 
             // Одно из направлений нулевое, но это не страшно
             newPosition += horizontalDir * (1 - horObstacleExist);
@@ -233,13 +246,18 @@ namespace Player.Controllers
             IsMoving = true;
             movementEndPosition = newPosition;
 
+            
             // Пока расстояние больше очень малого значения близкого к нулю
             while (sqrMagnitude > float.Epsilon)
             {
-                transform.position = Vector3.MoveTowards(transform.position, newPosition, InversedMoveTime * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(transform.position, newPosition,
+                 InversedMoveTime * Time.deltaTime);
 
                 sqrMagnitude = (transform.position - newPosition).sqrMagnitude;
-
+                
+                // Вручную обновляем камеру
+                ManualUpdateCamera();
+                
                 // Ждем обновления кадра
                 yield return null;
             }
@@ -257,7 +275,36 @@ namespace Player.Controllers
             transform.position = movementEndPosition;
         }
 
+        /// <summary>
+        /// Проигрывание анимации по названию
+        /// </summary>
+        public void PlayAnimation(string animationName)
+        {
+            if (Animator != null)
+            {
+                Animator.Play(animationName);
+            }
+        }
 
+        /// <summary>
+        /// Проигрывание анимации по хешу. Animator.StringToHash(), чтобы получить хеш
+        /// </summary>
+        public void PlayAnimationByHash(int hash)
+        {
+            if (Animator != null)
+            {
+                Animator.Play(hash);
+            }
+        }
+
+        /// <summary>
+        /// Вызывает метод обновления камеры
+        /// </summary>
+        public void ManualUpdateCamera()
+        {
+            if(cameraFollow!=null)
+                cameraFollow.MoveToTarget();
+        }
 
 
 
