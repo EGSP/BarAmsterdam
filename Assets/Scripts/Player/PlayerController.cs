@@ -5,6 +5,7 @@ using UnityEngine;
 using Player.PlayerStates;
 using Player.PlayerCursors;
 using Interiors;
+using Items.MonoItems;
 
 // TODO: Добавить метод обновления камеры. 
 // TODO: Сделать вызов обновления камеры при любом перемещении. 
@@ -36,6 +37,11 @@ namespace Player.Controllers
         public float VerticalStepModifier { get => verticalStepModifier; }
         [Range(0,1)][SerializeField] private float verticalStepModifier;
 
+        /// <summary>
+        /// Местоположение руки, куда будут складываться предметы
+        /// </summary>
+        public Transform HandTransform { get => handTransform; }
+        [SerializeField] private Transform handTransform;
         /// <summary>
         /// Настольный курсор для предметов
         /// </summary>
@@ -385,6 +391,24 @@ namespace Player.Controllers
             var item = transform.GetChild(0);
             item.parent = interior.gameObject.transform;
             return "Nothing";
+        }
+
+        /// <summary>
+        /// Устанавливает родительский объект предмету в руке
+        /// </summary>
+        public void PlaceItemToHand(MonoItem monoItem)
+        {
+            if (HandTransform == null)
+            {
+                Debug.Log("У персонажа не установлена рука");
+                monoItem.transform.position = transform.position;
+                monoItem.transform.SetParent(transform,true);
+            }
+            else
+            {
+                monoItem.transform.position = HandTransform.position;
+                monoItem.transform.SetParent(HandTransform, true);
+            }
         }
 
         private void OnDrawGizmosSelected()

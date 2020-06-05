@@ -185,7 +185,10 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
 
     private void OnDrawGizmos()
     {
-        for(int i = 0; i < places.Count; i++)
+        if (places.Count == 0)
+            return;
+        
+        for(var i = 0; i < places.Count; i++)
         {
             var place = places[i];
 

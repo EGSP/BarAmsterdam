@@ -10,7 +10,7 @@
 /[Ll]ogs/
 /[Mm]emoryCaptures/
 /ProjectSettings
-/Scenes
+
 /[Pp]ackages
 
 
@@ -54,7 +54,7 @@ ExportedObj/
 *.json
 
 *.meta
-*.unity
+
 
 # Unity3D generated file on crash reports
 sysinfo.txt

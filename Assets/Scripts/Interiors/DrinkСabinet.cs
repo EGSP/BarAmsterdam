@@ -14,7 +14,7 @@ namespace Interiors
 {
     public class DrinkСabinet : TableTop
     {
-        [SerializeField] private Bottle drink;
+        [SerializeField] private Bottle bottlePrefab;
         
         /// <summary>
         /// Ориентация по вертикали от -1 до 1
@@ -29,7 +29,7 @@ namespace Interiors
         public override IItem TakeItemByDistance(Vector3 initiatorPosition)
         {
             Debug.Log(initiatorPosition - transform.position == new Vector3(horOrientation, verOrientation * 0.5f, 0));
-            var bottle = Instantiate(drink, new Vector3(0,0,0), Quaternion.identity);
+            var bottle = Instantiate(bottlePrefab, new Vector3(0,0,0), Quaternion.identity);
             // var bottle = Instantiate(drink, new Vector3(0,0,0), Quaternion.identity);
             Debug.Log("bottle");
             Debug.Log(bottle);

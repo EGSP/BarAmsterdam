@@ -5,9 +5,10 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed;
+    [SerializeField] private float moveTime;
     [SerializeField] private bool useXAxis;
     [SerializeField] private bool useYAxis;
+    [SerializeField] private Vector3 offset;
     
     /// <summary>
     /// Текущая цель, за которой двигается камера
@@ -32,8 +33,8 @@ public class CameraFollow : MonoBehaviour
         
         
         
-        // if(Target!=null)
-            // MoveToTarget();
+        if(Target!=null)
+            MoveToTarget();
     }
 
     /// <summary>
@@ -46,10 +47,11 @@ public class CameraFollow : MonoBehaviour
         // var newPosition = Vector3.SmoothDamp(transform.position,
         //     Target.position, ref currentVelocity,
         //     1 / moveSpeed, moveSpeed, Time.deltaTime);
-        var newPosition = Vector3.MoveTowards(transform.position,
-            Target.position, moveSpeed * Time.deltaTime);
+        // var newPosition = Vector3.MoveTowards(transform.position,
+        //     Target.position, moveSpeed * Time.deltaTime);
 
-        // var newPosition = Vector3.Lerp(transform.position, Target.position, 1 / moveSpeed);
+        var newPosition = Vector3.Lerp(transform.position, Target.position+offset,
+            1 / moveTime);
 
         newPosition.z = -10;
         if (!useXAxis)

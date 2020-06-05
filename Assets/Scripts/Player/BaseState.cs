@@ -127,7 +127,7 @@ namespace Player.PlayerStates
 
             if (item != null)
             {
-                item.transform.parent = Player.transform;
+                Player.PlaceItemToHand(item);
                 return item.GetPlayerState(Player);
             }
 
