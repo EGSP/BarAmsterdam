@@ -53,7 +53,6 @@ ExportedObj/
 *.mdb.meta
 *.json
 
-*.meta
 
 
 # Unity3D generated file on crash reports
@@ -68,7 +67,7 @@ crashlytics-build.properties
 
 
 
-Packages/
+
 
 Assets/CodeMonkey/
 
