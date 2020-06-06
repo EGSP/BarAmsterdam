@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Core;
 using UnityEngine;
 
 using Player.PlayerStates;
@@ -11,7 +12,7 @@ using Items.MonoItems;
 // TODO: Сделать вызов обновления камеры при любом перемещении. 
 namespace Player.Controllers
 {
-    public class PlayerController : MonoBehaviour
+    public class PlayerController : MonoBehaviour, IHaveOrientation
     {
         /// <summary>
         /// Маска объектов, с которыми будет обработка столкновений
@@ -70,8 +71,7 @@ namespace Player.Controllers
         /// <summary>
         /// Ориентация игрока (направление взгляда)
         /// </summary>
-        public Vector3 Orientation { get => orientation; private set => orientation = value.normalized; }
-        private Vector3 orientation = Vector3.right;
+        public Orientation Orientation { get; private set; }
 
         /// <summary>
         /// Ориентация игрока учитываяющая модификатор шага
@@ -80,7 +80,7 @@ namespace Player.Controllers
         {
             get
             {
-                var orient = Orientation;
+                var orient = Orientation.Direction;
                 orient.y *= verticalStepModifier;
                 return orient;
             }
@@ -97,13 +97,12 @@ namespace Player.Controllers
         /// <summary>
         /// Текущее поведение персонажа
         /// </summary>
-        private PlayerState CurrentPlayerState;
+        public PlayerState CurrentPlayerState { get; private set; }
 
         /// <summary>
         /// Кешируем данные обновления, чтобы не пересоздавать каждый кадр
         /// </summary>
         private UpdateData updateData;
-        
         
         private void Awake()
         {
@@ -125,7 +124,9 @@ namespace Player.Controllers
             if (TableCursor == null)
                 throw new System.Exception("TableCursor is null in PlayerController.cs. Set TableCursor component on PlayerController gameobject");
 
-            Orientation = Vector3.right;
+            Orientation = new Orientation();
+            Orientation.SetDirection(Vector3.right);
+            
 
             updateData = new UpdateData();
             SetState(new BaseState(this));
@@ -227,16 +228,16 @@ namespace Player.Controllers
             // Если только одно из направлений действительно
             if ((Mathf.Abs(horizontal) + Mathf.Abs(vertical)) == 1)
             {
-                Orientation = new Vector3(horizontal, vertical);
+                Orientation.SetDirection(new Vector3(horizontal, vertical));
             }
             else
             {
                 // Здесь оба могут быть нулевыми
                 if (horizontal != 0)
-                    Orientation = new Vector3(horizontal, Orientation.y);
+                    Orientation.SetDirection(new Vector3(horizontal, Orientation.Direction.y));
 
                 if (vertical != 0)
-                    Orientation = new Vector3(Orientation.x, vertical);
+                    Orientation.SetDirection(new Vector3(Orientation.Direction.x, vertical));
             }
         }
 
@@ -411,7 +412,19 @@ namespace Player.Controllers
             }
         }
 
-        private void OnDrawGizmosSelected()
+        /// <summary>
+        /// Получение измененного направления в соответствии с шагом
+        /// </summary>
+        public Vector3 GetModifiedDirection(Vector3 direction)
+        {
+            direction.Normalize();
+            direction.x *= MoveStep;
+            direction.y *= VerticalStepModifier;
+
+            return direction;
+        }
+
+        private void OnDrawGizmos()
         {
             // Отрисовка величины шага
             Gizmos.color = Color.red;
@@ -420,9 +433,14 @@ namespace Player.Controllers
                 transform.position - transform.up * MoveStep * VerticalStepModifier,
                 transform.position + transform.up * MoveStep * VerticalStepModifier);
 
-            // Направление взгляда
-            Gizmos.color = Color.blue;
-            Gizmos.DrawLine(transform.position, transform.position + Orientation);
+            if (Orientation != null)
+            {
+                // Направление взгляда
+                Gizmos.color = Color.blue;
+                Gizmos.DrawLine(transform.position, transform.position + Orientation.Direction);
+                Gizmos.color = Color.green;
+                Gizmos.DrawLine(transform.position,transform.position+Orientation.LocalLeft );
+            }
         }
     }
 }

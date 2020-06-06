@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Core;
 using Player;
 using Player.PlayerStates;
 using Player.Controllers;
@@ -9,7 +10,7 @@ using UnityEngine.Serialization;
 
 namespace Interiors
 {
-    public class Chair : Interior
+    public class Chair : Interior, IHaveOrientation
     {
         [FormerlySerializedAs("AutoOrientation")] [SerializeField] private bool autoOrientation = true;
 
@@ -23,16 +24,8 @@ namespace Interiors
         /// </summary>
         public int SerialId { get; private set; }
         
-        /// <summary>
-        /// Ориентация по вертикали от -1 до 1
-        /// </summary>
-        public int verOrientation { get; private set; } = 0;
-
-        /// <summary>
-        /// Ориентация по горизонтали от -1 до 1
-        /// </summary>
-        public int horOrientation { get; private set; } = 1;
-
+        public Orientation Orientation { get; set; }
+        
         public TableTop table;
 
         /// <summary>
@@ -47,7 +40,9 @@ namespace Interiors
 
         private void SetOrientation()
         {
-            List<(int, int)> OrientationList = new List<(int, int)>
+            Orientation = new Orientation();
+            
+            var orientationList = new List<(int, int)>
             {
                 (1, 0),
                 (-1, 0),
@@ -55,12 +50,12 @@ namespace Interiors
                 (0, -1)
             };
             
-            foreach ((int, int) orientation in OrientationList)
+            foreach ((int, int) orientation in orientationList)
             {
                 var vertical = orientation.Item1;
-                var horisontal = orientation.Item2;
+                var horizontal = orientation.Item2;
                 
-                Vector3 endPosition = new Vector3(transform.position.x + horisontal, transform.position.y + vertical, transform.position.z);
+                Vector3 endPosition = new Vector3(transform.position.x + horizontal, transform.position.y + vertical, transform.position.z);
                 
                 GetComponent<BoxCollider2D>().enabled = false;
                 var hit = Physics2D.Linecast(transform.position, endPosition, ~0);
@@ -69,18 +64,19 @@ namespace Interiors
                 if (hit.collider != null)
                 {
                     table = hit.collider.gameObject.GetComponent<TableTop>();
-                    verOrientation = vertical;
-                    horOrientation = horisontal;
+                    
+                    Orientation.SetDirection(horizontal,vertical);
                     return;
                 }
             };
-            verOrientation = 0;
-            horOrientation = 1;
+            
+            Orientation.SetDirection(1,0);
             return;
         }
 
         public void Start()
         {
+            
             if(autoOrientation)
                 SetOrientation();
         }

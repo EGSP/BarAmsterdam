@@ -13,11 +13,6 @@ namespace Player.PlayerStates
         public ChairState(PlayerController player, Chair interior) : base(player)
         {
             Chair = interior;
-            Player.StopMovement();
-            Player.transform.position = Chair.transform.position;
-            Player.SpriteRenderer.flipX = Chair.horOrientation > 0 ? true : false;
-            Player.Animator.Play("SitDown");
-
         }
 
         // Нечего высввобождать
@@ -25,7 +20,32 @@ namespace Player.PlayerStates
         {
             return;
         }
-        
+
+        public override PlayerState Awake()
+        {
+            // Выкладываем предмет на стол если есть место
+            var withItemState = Player.CurrentPlayerState as WithItemState;
+            if (withItemState != null)
+            {
+                if (Chair.table.PlaceAvailable)
+                {
+                    Chair.table.AddItemToNearest(withItemState.Item, Chair.transform.position);
+                }
+                else
+                {
+                    // Возвращаем прежнее состояние если нельзя сесть
+                    return withItemState;
+                }
+            }
+
+            // Садимся
+            Player.StopMovement();
+            Player.transform.position = Chair.transform.position;
+            Player.SpriteRenderer.flipX = Chair.Orientation.Direction.x > 0 ? true : false;
+            Player.PlayAnimation("SitDown");
+            return this;
+        }
+
         public override PlayerState Action(UpdateData updateData)
         {
             Debug.Log("chair action");
@@ -54,7 +74,7 @@ namespace Player.PlayerStates
 
             if (hor != 0 || ver != 0)
             {
-                if (hor * Chair.horOrientation + ver * Chair.verOrientation == 0)
+                if (hor * Chair.Orientation.Direction.x + ver * Chair.Orientation.Direction.y == 0)
                 {
                     Player.MoveWithoutCollision(hor, ver);
                     

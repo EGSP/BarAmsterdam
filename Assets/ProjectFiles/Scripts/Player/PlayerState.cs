@@ -23,6 +23,11 @@ namespace Player.PlayerStates
 
             Player = player;
         }
+        
+        /// <summary>
+        /// Пробуждает состояние
+        /// </summary>
+        public abstract PlayerState Awake();
 
         public abstract PlayerState Move(UpdateData updateData);
         public abstract PlayerState Handle(UpdateData updateData);
@@ -66,6 +71,7 @@ namespace Player.PlayerStates
         /// Высвобождение ресурсов
         /// </summary>
         public abstract void Dispose();
+
 
     }
 

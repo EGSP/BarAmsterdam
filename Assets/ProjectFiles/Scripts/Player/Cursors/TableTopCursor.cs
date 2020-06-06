@@ -62,6 +62,7 @@ namespace Player.PlayerCursors
         public void Cancel()
         {
             cursor.gameObject.SetActive(false);
+            IsActive = false;
         }
 
         /// <summary>

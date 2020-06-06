@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System;
-
+using System.Collections.Generic;
 using Interiors;
 using Items.MonoItems;
 
@@ -25,6 +25,11 @@ namespace Player.PlayerStates
             return;
         }
 
+        public override PlayerState Awake()
+        {
+            return this;
+        }
+
         public PlayerState Pose(UpdateData updateData)
         {
             var pos = Vector3.zero;
@@ -34,7 +39,7 @@ namespace Player.PlayerStates
             var interior = Player.GetComponentByLinecast<Interior>(pos);
             if (interior != null)
             {
-                return interior.GetPlayerState(Player);
+                return interior.GetPlayerState(Player).Awake();
             }
 
             return this;
@@ -52,6 +57,8 @@ namespace Player.PlayerStates
             if (hor != 0 || ver != 0)
             {
                 cursor.Cancel();
+                
+                Player.ChangeOrientation(hor, ver);
 
                 // Если персонаж должен сдвинутся и он стоит на месте
                 if ((hor != 0 || ver != 0) && Player.IsMoving == false)
@@ -104,8 +111,7 @@ namespace Player.PlayerStates
         public override PlayerState Handle(UpdateData updateData)
         {
             var cursor = Player.TableCursor;
-            var tableTop = Player.GetComponentByLinecast<TableTop>(
-                Player.transform.position + Player.ModifiedOrientation);
+            var tableTop = FindAcceptableObject<TableTop>();
 
             // Если стола рядом нет
             if (tableTop == null)
@@ -124,11 +130,13 @@ namespace Player.PlayerStates
             {
                 item = tableTop.TakeItemByDistance(Player.transform.position) as MonoItem;
             }
+            
+            cursor.Cancel();
 
             if (item != null)
             {
                 Player.PlaceItemToHand(item);
-                return item.GetPlayerState(Player);
+                return item.GetPlayerState(Player).Awake();
             }
 
             return this;
@@ -136,6 +144,7 @@ namespace Player.PlayerStates
 
         public override PlayerState Action(UpdateData updateData)
         {
+            Player.TableCursor.Cancel();
             Debug.Log("Smoking");
             
             return this;
@@ -148,8 +157,7 @@ namespace Player.PlayerStates
             // Если курсор ни на что не указывает
             if(cursor.IsActive == false)
             {
-                var cursorEnumerable = Player.GetComponentByLinecast<ICursorEnumerable>
-                    (Player.transform.position + Player.ModifiedOrientation);
+                var cursorEnumerable = FindAcceptableObject<ICursorEnumerable>();
 
                 if(cursorEnumerable != null)
                 {
@@ -167,6 +175,32 @@ namespace Player.PlayerStates
             }
 
             return this;
+        }
+
+        /// <summary>
+        /// Получение подходящего объекта рядом
+        /// </summary>
+        /// <returns></returns>
+        public T FindAcceptableObject<T>() where T: class
+        {
+            // Направление взгляда, сверху и снизу
+            var pointList = new List<Vector3>
+            {
+                Player.transform.position + Player.ModifiedOrientation,
+                Player.transform.position+ Player.GetModifiedDirection(Vector3.up),
+                Player.transform.position + Player.GetModifiedDirection(Vector3.down)
+            };
+
+            for (var i = 0; i < pointList.Count; i++)
+            {
+                var tObject = Player.GetComponentByLinecast<T>(
+                    pointList[i]);
+
+                if (tObject != null)
+                    return tObject;
+            }
+
+            return null;
         }
         
         /// <summary>

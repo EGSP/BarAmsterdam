@@ -8,20 +8,19 @@ using Player.Controllers;
 
 namespace Player.PlayerStates
 {
-    public class BottleState : WithItemState
+    public class GlassState : WithItemState
     {
-        private Bottle Bottle;
-        public BottleState(PlayerController player, Bottle bottle) : base(player)
+        private Glass Glass;
+        public override MonoItem Item => Glass;
+        public GlassState(PlayerController player,Glass glass) : base(player)
         {
-            item = bottle;
-            Bottle = bottle;
+            Glass = glass;
         }
 
         public override PlayerState Action(UpdateData updateData)
         {
             var cursor = Player.TableCursor;
-            var tableTop = Player.GetComponentByLinecast<TableTop>(
-                Player.transform.position + Player.ModifiedOrientation);
+            var tableTop = FindAcceptableObject<TableTop>();
 
             if (tableTop == null)
             {
@@ -38,15 +37,15 @@ namespace Player.PlayerStates
             {
                 actionItem = tableTop.PopTakeableItemByDistance(Player.transform.position) as MonoItem;
             }
-
-            var glass = actionItem as Glass;
-            if (glass != null)
+            
+            var bottle = actionItem as Bottle;
+            if (bottle != null)
             {
-                Bottle.FillGlass(glass);
+                bottle.FillGlass(Glass);
             }
             else
             {
-                NoIteractItemWarning(typeof(Glass));
+                NoIteractItemWarning(typeof(Bottle));
             }
             return this;
         }
