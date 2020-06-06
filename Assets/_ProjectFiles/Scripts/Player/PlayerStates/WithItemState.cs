@@ -16,7 +16,11 @@ namespace Player.PlayerStates
 
         }
 
+        /// <summary>
+        /// Предмет состояния
+        /// </summary>
         public virtual MonoItem Item { get; }
+        
         // Нечего высввобождать
         public override void Dispose()
         {
@@ -33,7 +37,7 @@ namespace Player.PlayerStates
                 return this;
             }
 
-            if (tableTop.PlaceAvailable)
+            if (tableTop.Available(Item))
             {
                 tableTop.AddItemToNearest(Item,Player.transform.position);
                 return new BaseState(Player);

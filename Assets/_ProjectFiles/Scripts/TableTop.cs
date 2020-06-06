@@ -28,7 +28,7 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
     /// <summary>
     /// Существует ли свободное место для предмета
     /// </summary>
-    public bool PlaceAvailable
+    public virtual bool PlaceAvailable
     {
         get
         {
@@ -43,23 +43,31 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
             return false;
         }
     }
+    
+    /// <summary>
+    /// Логика добавления предмета
+    /// </summary>
+    /// <param name="place">Место куда должен быть сложен предмет</param>
+    /// <param name="itemToAdd">Добавляемый предмет</param>
+    protected virtual void AddItem(ItemPlace place, IItem itemToAdd)
+    {
+        if (place != null)
+        {
+            place.PlaceItem(itemToAdd);
+
+            OnCollectionChanged();
+        }
+    }
 
     /// <summary>
     /// Добавляет предмет на стол в любую свободную ячейку
     /// </summary>
     /// <param name="item">Добавляемый предмет</param>
-    public virtual void AddItem(IItem item)
+    public virtual void AddItemToFreePlace(IItem item)
     {
         var freePlace = places.FirstOrDefault(x => x.CurrentItem.ID == "NullItem");
 
-        // Если нашли свободное место
-        if(freePlace != null)
-        {
-            freePlace.PlaceItem(item);
-            
-            OnCollectionChanged();
-        }
-
+        AddItem(freePlace,item);
     }
 
     /// <summary>
@@ -73,12 +81,23 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
 
         if (freePlaces.Count() > 0)
         {
-            var place = freePlaces.OrderBy(x => (x.Position - initiatorPosition).sqrMagnitude);
+            var place = freePlaces.OrderBy(x =>
+                (x.Position - initiatorPosition).sqrMagnitude);
 
-            place.First().PlaceItem(item);
-
-            OnCollectionChanged();
+            AddItem(place.First(),item);
         }
+        else
+        {
+            AddItem(null,item);
+        }
+    }
+
+    /// <summary>
+    /// Логика убирания предмета
+    /// </summary>
+    protected virtual IItem TakeItem(ItemPlace place)
+    {
+        return place.RemoveItem();
     }
 
     /// <summary>
@@ -92,7 +111,7 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
         {
             var orderedPlaces = takeablePlaces.OrderBy(x
                 => (x.Position - initiatorPosition).sqrMagnitude);
-            var item = orderedPlaces.First().RemoveItem();
+            var item = TakeItem(orderedPlaces.First());
 
             return item;
         }
@@ -114,9 +133,17 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
         var coincidence = places.FirstOrDefault(x => x.CurrentItem == item);
 
         if (coincidence != null)
-            return coincidence.RemoveItem();
+            return TakeItem(coincidence);
 
         return new NullItem();
+    }
+
+    /// <summary>
+    /// Получение ссылки на предмет
+    /// </summary>
+    protected virtual IItem PopTakeableItem(ItemPlace place)
+    {
+        return place.CurrentItem;
     }
 
     /// <summary>
@@ -130,7 +157,7 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
         {
             var orderedPlaces = takeablePlaces.OrderBy(x 
                 => (x.Position - initiatorPosition).sqrMagnitude);
-            var item = orderedPlaces.First().CurrentItem;
+            var item = PopTakeableItem(orderedPlaces.First());
 
             return item;
         }
@@ -148,7 +175,7 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
         var coincidence = places.FirstOrDefault(x => x.CurrentItem == item);
 
         if (coincidence != null)
-            return coincidence.CurrentItem;
+            return PopTakeableItem(coincidence);
 
         return new NullItem();
     }
@@ -162,7 +189,7 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
         var coincidence = places.FirstOrDefault(x => x.CurrentItem.ID == itemID);
 
         if (coincidence != null)
-            return coincidence.RemoveItem();
+            return PopTakeableItem(coincidence);
 
         return new NullItem();
     }
@@ -182,9 +209,31 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
         return list;
     }
 
+    /// <summary>
+    /// Проверка совместимости типа предмета со столом
+    /// </summary>
+    /// <returns></returns>
+    public virtual bool TypeCompatibility(IItem item)
+    {
+        return true;
+    }
+
+    /// <summary>
+    /// Можно ли ставить предмет на стол
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    public bool Available(IItem item)
+    {
+        return PlaceAvailable & TypeCompatibility(item);
+    }
+
 
     private void OnDrawGizmos()
     {
+        if (places == null)
+            return;
+        
         if (places.Count == 0)
             return;
         

@@ -27,7 +27,7 @@ namespace Player.PlayerStates
             var withItemState = Player.CurrentPlayerState as WithItemState;
             if (withItemState != null)
             {
-                if (Chair.table.PlaceAvailable)
+                if (Chair.table.Available(withItemState.Item))
                 {
                     Chair.table.AddItemToNearest(withItemState.Item, Chair.transform.position);
                 }

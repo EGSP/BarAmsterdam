@@ -1,1 +1,1 @@
-price:33,4;chance:55;
+price:0;chance:0;

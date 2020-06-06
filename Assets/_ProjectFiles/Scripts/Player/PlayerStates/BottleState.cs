@@ -40,7 +40,7 @@ namespace Player.PlayerStates
                 }
             }
             
-            if (tableTop.PlaceAvailable)
+            if (tableTop.Available(Item))
             {
                 tableTop.AddItemToNearest(Item,Player.transform.position);
                 return new BaseState(Player);
