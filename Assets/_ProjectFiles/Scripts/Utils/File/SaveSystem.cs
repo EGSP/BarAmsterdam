@@ -20,7 +20,7 @@ namespace Gasanov.SpeedUtils.FileManagement
         /// <summary>
         /// Папка сохраняемых данных. Оканчивается на "/"
         /// </summary>
-        private static readonly string SaveFolder = Application.dataPath + "/ProjectFiles/GameData/";
+        private static readonly string SaveFolder = Application.dataPath + "/_ProjectFiles/GameData/";
 
         /// <summary>
         /// Инициализирована ли сейчас система сохранений

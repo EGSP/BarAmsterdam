@@ -1,21 +1,27 @@
 {
     "$id": 0,
     "$type": "0|Grids.Grid`1[[System.Int32, mscorlib]], Assembly-CSharp",
-    "Width": 4,
-    "Height": 4,
-    "CellSizeHorizontal": 2,
-    "CellSizeVertical": 2,
+    "Width": 10,
+    "Height": 10,
+    "CellSizeHorizontal": 1,
+    "CellSizeVertical": 0.5,
     "GridArray": {
         "$id": 1,
         "$type": "1|System.Collections.Generic.List`1[[System.Collections.Generic.List`1[[System.Int32, mscorlib]], mscorlib]], mscorlib",
-        "$rlength": 4,
+        "$rlength": 10,
         "$rcontent": [
             {
                 "$id": 2,
                 "$type": "2|System.Collections.Generic.List`1[[System.Int32, mscorlib]], mscorlib",
-                "$rlength": 4,
+                "$rlength": 10,
                 "$rcontent": [
                     0,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
                     1,
                     1,
                     1
@@ -24,19 +30,31 @@
             {
                 "$id": 3,
                 "$type": 2,
-                "$rlength": 4,
+                "$rlength": 10,
                 "$rcontent": [
+                    0,
                     1,
                     1,
                     1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    0,
                     1
                 ]
             },
             {
                 "$id": 4,
                 "$type": 2,
-                "$rlength": 4,
+                "$rlength": 10,
                 "$rcontent": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
                     1,
                     1,
                     1,
@@ -46,8 +64,116 @@
             {
                 "$id": 5,
                 "$type": 2,
-                "$rlength": 4,
+                "$rlength": 10,
                 "$rcontent": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    0,
+                    1
+                ]
+            },
+            {
+                "$id": 6,
+                "$type": 2,
+                "$rlength": 10,
+                "$rcontent": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    0,
+                    1
+                ]
+            },
+            {
+                "$id": 7,
+                "$type": 2,
+                "$rlength": 10,
+                "$rcontent": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            {
+                "$id": 8,
+                "$type": 2,
+                "$rlength": 10,
+                "$rcontent": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    0,
+                    1
+                ]
+            },
+            {
+                "$id": 9,
+                "$type": 2,
+                "$rlength": 10,
+                "$rcontent": [
+                    1,
+                    1,
+                    0,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            {
+                "$id": 10,
+                "$type": 2,
+                "$rlength": 10,
+                "$rcontent": [
+                    1,
+                    1,
+                    0,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    0,
+                    1
+                ]
+            },
+            {
+                "$id": 11,
+                "$type": 2,
+                "$rlength": 10,
+                "$rcontent": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
                     1,
                     1,
                     1,

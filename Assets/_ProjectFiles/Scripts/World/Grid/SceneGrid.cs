@@ -41,6 +41,8 @@ namespace World
 
         private Couple<int, int> startSelected;
         private Couple<int, int> goalSelected;
+        
+        private List<TMP_Text> pathCellNumbers = new List<TMP_Text>();
 
         private void Awake()
         {
@@ -79,6 +81,7 @@ namespace World
 
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
+                
                 // Если уже было выделение
                 if (navigationGrid.InBounds(startSelected.Item1,startSelected.Item2))
                 {
@@ -107,6 +110,7 @@ namespace World
 
             if (Input.GetKeyDown(KeyCode.Mouse1))
             {
+                
                 // Если уже было выделение
                 if (navigationGrid.InBounds(goalSelected.Item1,goalSelected.Item2))
                 {
@@ -141,6 +145,8 @@ namespace World
                 if (goalSelected.Item1 == -1 || goalSelected.Item2 == -1)
                     return;
 
+                ClearPathNumbers();
+                ResetHighlight();
                 var path = linkedJastar.FindPath(
                     linkedJastar.Grid[startSelected.Item1][startSelected.Item2],
                     linkedJastar.Grid[goalSelected.Item1][goalSelected.Item2]);
@@ -148,8 +154,8 @@ namespace World
                 for (var i = 0; i < path.Count; i++)
                 {
                     ChangeCellColor(path[i].X,path[i].Y,Color.magenta);
-                    UtilsClass.CreateWorldText($"{i}", transform,
-                        navigationGrid.GetWorldPosition(path[i].X, path[i].Y),5,Color.white);
+                    pathCellNumbers.Add(UtilsClass.CreateWorldText($"{i}", transform,
+                        navigationGrid.GetWorldPosition(path[i].X, path[i].Y),5,Color.white));
                 }
                 
             }
@@ -157,7 +163,17 @@ namespace World
             if (Input.GetKeyDown(KeyCode.R))
             {
                 ResetHighlight();
+                ClearPathNumbers();
             }
+        }
+
+        public void ClearPathNumbers()
+        {
+            for (var i = 0; i < pathCellNumbers.Count; i++)
+            {
+                Destroy(pathCellNumbers[i].gameObject);
+            }
+            pathCellNumbers.Clear();
         }
 
         private void OnDrawGizmos()
