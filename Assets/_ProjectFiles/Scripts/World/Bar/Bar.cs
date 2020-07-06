@@ -28,7 +28,11 @@ namespace World
         [Space(10)] [Header("Настройки сложности")]
         [SerializeField] private CurveHolder curveHolder;
 
+        [Space(10)] [Header("Настройки объектов")] 
+        [SerializeField] private Transform spawnPoint;
+        
         public FoodInfo FoodInformation { get; private set; }
+        
         
         /// <summary>
         /// Все стулья бара
@@ -53,6 +57,8 @@ namespace World
             FoodInformation = GetComponent<FoodInfo>();
             if(FoodInformation == null)
                 throw new NullReferenceException();
+            
+            SetupChairs();
         }
         
         private void Start()
@@ -87,7 +93,13 @@ namespace World
         /// </summary>
         public void SetupChairs()
         {
-            Chairs = FindObjectsOfType<Chair>().ToList();
+            // Находим все стулья со столами
+            Chairs = FindObjectsOfType<Chair>().Where(x =>
+            {
+               x.Setup();
+               return x.HasTable == true;
+            }).ToList();
+            
             freeChairs = new RandomList<Chair>(new List<Chair>());
 
             for (var i = 0; i < Chairs.Count; i++)
@@ -163,5 +175,14 @@ namespace World
             return path;
         }
 
+        public void OnDrawGizmos()
+        {
+            if (SceneGrid.Instance != null && spawnPoint != null)
+            {
+                var spawnPosition = SceneGrid.Instance.GetNearestCellCentralized(spawnPoint.position);
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawLine(spawnPoint.position,spawnPosition);
+            }
+        }
     }
 }

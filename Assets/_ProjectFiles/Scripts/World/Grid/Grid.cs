@@ -118,7 +118,7 @@ namespace Grids
         /// <summary>
         /// Получение позиции центра ячейки в мировых координатах
         /// </summary>
-        public Vector3 GetCenteredWorldPostion(int x,int y)
+        public Vector3 GetCentralizedWorldPostion(int x,int y)
         {
             return new Vector3(x * CellSizeHorizontal, y * CellSizeVertical) + new Vector3(CellSizeHorizontal, CellSizeVertical) * 0.5f;
         }
@@ -405,6 +405,80 @@ namespace Grids
         private void OnGridObjectDeletedHandler(int x,int y,TObject deletedObject)
         {
             OnGridObjectDeleted(x, y, deletedObject);
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        /// <summary>
+        /// Возвращает позицию в зависимости от размерности ячеек
+        /// </summary>
+        /// <param name="position">Позиция в мировом пространстве</param>
+        public Vector3 SnapToGridDimension(Vector3 position)
+        {
+            position.x = Mathf.Floor(position.x / CellSizeHorizontal)
+                         * CellSizeHorizontal;
+            
+            position.y = Mathf.Floor(position.y / CellSizeVertical)
+                         * CellSizeVertical;
+
+            return position;
+        }
+        
+        /// <summary>
+        /// Возвращает позицию в зависимости от размерности ячеек, но центрированную
+        /// </summary>
+        public Vector3 SnapToGridDimensionCentralized(Vector3 position)
+        {
+            position.x = Mathf.Floor(position.x / CellSizeHorizontal)
+                * CellSizeHorizontal+CellSizeHorizontal*0.5f;
+            
+            position.y = Mathf.Floor(position.y / CellSizeVertical)
+                * CellSizeVertical+CellSizeVertical*0.5f;
+
+            return position;
+        }
+
+        /// <summary>
+        /// Возвращает позицию ближайшей ячейки
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public Vector3 GetNearestCellCentralized(Vector3 position)
+        {
+            position = SnapToGridDimensionCentralized(position);
+            
+            int x, y;
+            WorldToIndex(position,out x,out y);
+            
+            if (InBounds(x,y))
+                return position;
+
+            x = Mathf.Clamp(x, 0, Width-1);
+            y = Mathf.Clamp(y, 0, Height-1);
+
+            return GetCentralizedWorldPostion(x, y);
+
+        }
+        
+        public Vector3 GetNearestCellCentralized(Vector3 position,out int x,out int y)
+        {
+            position = SnapToGridDimensionCentralized(position);
+            
+            WorldToIndex(position,out x,out y);
+            
+            if (InBounds(x,y))
+                return position;
+
+            x = Mathf.Clamp(x, 0, Width-1);
+            y = Mathf.Clamp(y, 0, Height-1);
+
+            return GetCentralizedWorldPostion(x, y);
         }
         
     }

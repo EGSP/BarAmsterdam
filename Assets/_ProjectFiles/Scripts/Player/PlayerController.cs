@@ -7,6 +7,7 @@ using Player.PlayerStates;
 using Player.PlayerCursors;
 using Interiors;
 using Items.MonoItems;
+using World;
 
 // TODO: Добавить метод обновления камеры. 
 // TODO: Сделать вызов обновления камеры при любом перемещении. 
@@ -130,6 +131,8 @@ namespace Player.Controllers
 
             updateData = new UpdateData();
             SetState(new BaseState(this));
+            
+            transform.position = SceneGrid.Instance.SnapToGridDimensionCentralized(transform.position);
         }
 
         // Update is called once per frame
@@ -440,6 +443,11 @@ namespace Player.Controllers
                 Gizmos.DrawLine(transform.position, transform.position + Orientation.Direction);
                 Gizmos.color = Color.green;
                 Gizmos.DrawLine(transform.position,transform.position+Orientation.LocalLeft );
+            }
+
+            if (SceneGrid.Instance != null)
+            {
+                Gizmos.DrawIcon(SceneGrid.Instance.SnapToGridDimensionCentralized(transform.position),"d_MoveTool on");
             }
         }
     }

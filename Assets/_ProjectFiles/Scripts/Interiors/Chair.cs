@@ -7,6 +7,7 @@ using Player.PlayerStates;
 using Player.Controllers;
 using UnityEngine;
 using UnityEngine.Serialization;
+using World;
 
 namespace Interiors
 {
@@ -14,6 +15,10 @@ namespace Interiors
     {
         [FormerlySerializedAs("AutoOrientation")] [SerializeField] private bool autoOrientation = true;
 
+        /// <summary>
+        /// Сделал ли стул установку
+        /// </summary>
+        public bool IsSetuped { get; private set; }
         /// <summary>
         /// Запрошен ли стул кем-то
         /// </summary>
@@ -26,7 +31,15 @@ namespace Interiors
         
         public Orientation Orientation { get; set; }
         
+        /// <summary>
+        /// Стол, к которому привязан стул
+        /// </summary>
         public TableTop table;
+
+        /// <summary>
+        /// Привязан ли стул к столу
+        /// </summary>
+        public bool HasTable => table == null;
 
         /// <summary>
         /// Вызывается методом KickSitting, когда нужно выгнать сидящего
@@ -38,7 +51,10 @@ namespace Interiors
             return new ChairState(playerController, this);
         }
 
-        private void SetOrientation()
+        /// <summary>
+        /// Установка ориентации стула в зависимости от наличия стола
+        /// </summary>
+        public void Setup()
         {
             Orientation = new Orientation();
             
@@ -52,33 +68,38 @@ namespace Interiors
             
             foreach ((int, int) orientation in orientationList)
             {
-                var vertical = orientation.Item1;
-                var horizontal = orientation.Item2;
+                var horizontal = orientation.Item1*SceneGrid.Instance.HorizontalModifier;
+                var vertical = orientation.Item2*SceneGrid.Instance.VerticalModifier;
+               
+                var collider2D = Physics2D.OverlapCircle(transform.position + new Vector3(horizontal, vertical),
+                    0.2f);
                 
-                Vector3 endPosition = new Vector3(transform.position.x + horizontal, transform.position.y + vertical, transform.position.z);
-                
-                GetComponent<BoxCollider2D>().enabled = false;
-                var hit = Physics2D.Linecast(transform.position, endPosition, ~0);
-                GetComponent<BoxCollider2D>().enabled = true;
-                
-                if (hit.collider != null)
+                if (collider2D != null)
                 {
-                    table = hit.collider.gameObject.GetComponent<TableTop>();
-                    
-                    Orientation.SetDirection(horizontal,vertical);
-                    return;
+                    var tableTop = collider2D.GetComponent<TableTop>();
+
+                    if (tableTop != null)
+                    {
+                        table = tableTop;
+                        Orientation.SetDirection(horizontal,vertical);
+                        IsSetuped = true;
+                        return;
+                    }
                 }
             };
             
+            if(table == null)
+                Debug.Log($"Для стула {gameObject.name} не найдено стола");
+            
             Orientation.SetDirection(1,0);
+            IsSetuped = true;
             return;
         }
 
-        public void Start()
+        public void Awake()
         {
-            
-            if(autoOrientation)
-                SetOrientation();
+            if(autoOrientation && IsSetuped == false)
+                Setup();
         }
 
         /// <summary>

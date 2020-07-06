@@ -14,6 +14,11 @@ namespace Bots.Goals
         protected Goal NextGoal;
 
         /// <summary>
+        /// Цель возникающая при провале
+        /// </summary>
+        protected Goal FailedGoal;
+
+        /// <summary>
         /// Добавляет и возвращает следующую цель
         /// </summary>
         /// <param name="goal">Следующая цель</param>
@@ -25,6 +30,21 @@ namespace Bots.Goals
 
             NextGoal = goal;
             return NextGoal;
+        }
+
+        /// <summary>
+        /// Добавляет и возвращает цель провала
+        /// </summary>
+        /// <param name="goal"></param>
+        /// <returns></returns>
+        /// <exception cref="ElementDefineException"></exception>
+        public Goal JoinFailed(Goal goal)
+        {
+            if(FailedGoal != null)
+                throw new ElementDefineException();
+
+            FailedGoal = goal;
+            return FailedGoal;
         }
 
         /// <summary>

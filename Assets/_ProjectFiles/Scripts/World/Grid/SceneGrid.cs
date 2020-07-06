@@ -17,8 +17,23 @@ namespace World
 {
     public class SceneGrid : MonoBehaviour
     {
-        public static SceneGrid Instance;
-        
+        public static SceneGrid Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = FindObjectOfType<SceneGrid>();
+                    instance.Initialize();
+                }
+
+                return instance;
+            }
+            private set => instance = value;
+        }
+
+        private static SceneGrid instance;
+
         [SerializeField] private Material gridCellMaterial;
         // Настройки сетки
         [SerializeField] private SceneGridSettings gridSettings;
@@ -44,13 +59,28 @@ namespace World
         
         private List<TMP_Text> pathCellNumbers = new List<TMP_Text>();
 
+        /// <summary>
+        /// Вертикальный модификатор шага
+        /// </summary>
+        public float VerticalModifier => gridSettings.CellSizeVertical;
+        
+        /// <summary>
+        /// Горизонтальный модификатор шага
+        /// </summary>
+        public float HorizontalModifier => gridSettings.CellSizeHorizontal;
+        
         private void Awake()
         {
-            if(Instance != null)
+            if(Instance != null && Instance != this)
                 throw new SingletonException<SceneGrid>(this);
 
             Instance = this;
             
+            Initialize();
+        }
+
+        private void Initialize()
+        {
             SetGridSettings(GridEditor.LoadGridSettings());
             
             // First step
@@ -510,6 +540,35 @@ namespace World
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Приближает позицию к ближайшей ячейке
+        /// </summary>
+        public Vector3 SnapToGridDimension(Vector3 position)
+        {
+            return baseGrid.SnapToGridDimension(position);
+        }
+
+        /// <summary>
+        /// Приближает позицию к центру ближайшей ячейки
+        /// </summary>
+        public Vector3 SnapToGridDimensionCentralized(Vector3 position)
+        {
+            return baseGrid.SnapToGridDimensionCentralized(position);
+        }
+        
+        /// <summary>
+        /// Возвращает позицию ближайшей ячейки
+        /// </summary>
+        public Vector3 GetNearestCellCentralized(Vector3 position,out int x,out int y)
+        {
+            return baseGrid.GetNearestCellCentralized(position, out x,out y);
+        }
+        
+        public Vector3 GetNearestCellCentralized(Vector3 position)
+        {
+            return baseGrid.GetNearestCellCentralized(position);
         }
     }
 }
