@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bots.Factory;
 using Gasanov.Exceptions;
 using Gasanov.Extensions;
 using Gasanov.SpeedUtils;
@@ -73,6 +74,14 @@ namespace World
                 UpdateText(text);
                 
             }, hourTimer.TargetMinutes);
+            
+            TestFunction();
+        }
+
+        private void TestFunction()
+        {
+            CustomersFactory.LoadCustomersPrefabs();
+            var cust = CustomersFactory.CreateCustomerBehaviour();
         }
 
         private void UpdateText(TMP_Text text)

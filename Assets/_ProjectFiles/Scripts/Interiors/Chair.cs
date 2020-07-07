@@ -66,13 +66,16 @@ namespace Interiors
                 (0, -1)
             };
             
-            foreach ((int, int) orientation in orientationList)
+            foreach ((int, int) direction in orientationList)
             {
-                var horizontal = orientation.Item1*SceneGrid.Instance.HorizontalModifier;
-                var vertical = orientation.Item2*SceneGrid.Instance.VerticalModifier;
+                var horizontal = direction.Item1 * SceneGrid.Instance.HorizontalModifier;
+                var vertical = direction.Item2 * SceneGrid.Instance.VerticalModifier;
                
-                var collider2D = Physics2D.OverlapCircle(transform.position + new Vector3(horizontal, vertical),
-                    0.2f);
+                // Проверка сферическая, поэтому может зацепить ненужные объекты.
+                // Лучше делать центр объекта в центре ячейки
+                var collider2D = Physics2D.OverlapCircle(
+                    transform.position + new Vector3(horizontal, vertical),
+                    0.1f);
                 
                 if (collider2D != null)
                 {
@@ -83,6 +86,8 @@ namespace Interiors
                         table = tableTop;
                         Orientation.SetDirection(horizontal,vertical);
                         IsSetuped = true;
+                        Debug.Log($"{horizontal} : {vertical}");
+                        Debug.Log(Orientation.Direction);
                         return;
                     }
                 }

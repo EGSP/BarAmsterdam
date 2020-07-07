@@ -11,7 +11,7 @@ namespace Gasanov.SpeedUtils.RandomUtilities
     public class RandomList<T>
     {
         /// <summary>
-        /// Изначальная коллекция
+        /// Изначальная коллекция. Ссылка на изначальную коллекцию
         /// </summary>
         public readonly IList<T> SourceCollection;
         

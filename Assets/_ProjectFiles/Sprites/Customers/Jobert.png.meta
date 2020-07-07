@@ -1,0 +1,617 @@
+fileFormatVersion: 2
+guid: ea03ad8688b35dd4496a53ff9f6b3e7c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1956678190680698496
+    second: Jobert_0
+  - first:
+      213: -6094263550916208180
+    second: Jobert_1
+  - first:
+      213: 5511330832619744663
+    second: Jobert_2
+  - first:
+      213: -5585939550193866849
+    second: Jobert_3
+  - first:
+      213: -5080656293194194882
+    second: Jobert_4
+  - first:
+      213: 5026040548018314510
+    second: Jobert_5
+  - first:
+      213: -3108937614458146970
+    second: Jobert_6
+  - first:
+      213: 5706161796874309964
+    second: Jobert_7
+  - first:
+      213: -7993859784219282727
+    second: Jobert_8
+  - first:
+      213: 3639928058570192294
+    second: Jobert_9
+  - first:
+      213: -6343749188898953141
+    second: Jobert_10
+  - first:
+      213: 9179029811186473440
+    second: Jobert_11
+  - first:
+      213: 2887399111766863157
+    second: Jobert_12
+  - first:
+      213: 4866191243492483260
+    second: Jobert_13
+  - first:
+      213: 3630414432407548937
+    second: Jobert_14
+  - first:
+      213: -5687892114589164358
+    second: Jobert_15
+  - first:
+      213: -4593924289370168523
+    second: Jobert_16
+  - first:
+      213: 3570077239762499432
+    second: Jobert_17
+  - first:
+      213: 1286605883384243218
+    second: Jobert_18
+  - first:
+      213: 6044568168990732151
+    second: Jobert_0
+  - first:
+      213: 5266692681289311134
+    second: Jobert_1
+  - first:
+      213: 5733700455047268100
+    second: Jobert_2
+  - first:
+      213: -628775211494456126
+    second: Jobert_3
+  - first:
+      213: -6072964026961067458
+    second: Jobert_4
+  - first:
+      213: 4958159519537537115
+    second: Jobert_5
+  - first:
+      213: 8034068395082816031
+    second: Jobert_6
+  - first:
+      213: 8662049706520868565
+    second: Jobert_7
+  - first:
+      213: -4364734585452996882
+    second: Jobert_8
+  - first:
+      213: -7098913228545475999
+    second: Jobert_9
+  - first:
+      213: -739628989842600425
+    second: Jobert_10
+  - first:
+      213: 445671379517249834
+    second: Jobert_11
+  - first:
+      213: -3598883754820962371
+    second: Jobert_12
+  - first:
+      213: 2985060848132721387
+    second: Jobert_13
+  - first:
+      213: 7338489288503769357
+    second: Jobert_14
+  - first:
+      213: -8502648552846411467
+    second: Jobert_15
+  - first:
+      213: 495477384254744179
+    second: Jobert_16
+  - first:
+      213: -2065420308323980999
+    second: Jobert_17
+  - first:
+      213: -7932175144508288384
+    second: Jobert_18
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Jobert_0
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 17
+        width: 26
+        height: 66
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77f635569be92e350800000000000000
+      internalID: 6044568168990732151
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jobert_1
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 17
+        width: 26
+        height: 67
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e932669e61d071940800000000000000
+      internalID: 5266692681289311134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jobert_2
+      rect:
+        serializedVersion: 2
+        x: 169
+        y: 17
+        width: 26
+        height: 66
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40786977f22329f40800000000000000
+      internalID: 5733700455047268100
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jobert_3
+      rect:
+        serializedVersion: 2
+        x: 233
+        y: 17
+        width: 23
+        height: 67
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c44d4bc6442647f0800000000000000
+      internalID: -628775211494456126
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jobert_4
+      rect:
+        serializedVersion: 2
+        x: 271
+        y: 17
+        width: 23
+        height: 67
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e328247b46f78bba0800000000000000
+      internalID: -6072964026961067458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jobert_5
+      rect:
+        serializedVersion: 2
+        x: 332
+        y: 16
+        width: 23
+        height: 68
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b50a1c540dbeec440800000000000000
+      internalID: 4958159519537537115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jobert_6
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 16
+        width: 23
+        height: 68
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f1a9a1693aebe7f60800000000000000
+      internalID: 8034068395082816031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jobert_7
+      rect:
+        serializedVersion: 2
+        x: 457
+        y: 17
+        width: 23
+        height: 67
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d6f3f78058c53870800000000000000
+      internalID: 8662049706520868565
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jobert_8
+      rect:
+        serializedVersion: 2
+        x: 491
+        y: 18
+        width: 34
+        height: 62
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee6563715095d63c0800000000000000
+      internalID: -4364734585452996882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jobert_9
+      rect:
+        serializedVersion: 2
+        x: 570
+        y: 18
+        width: 38
+        height: 62
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 16ab931c7089b7d90800000000000000
+      internalID: -7098913228545475999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jobert_10
+      rect:
+        serializedVersion: 2
+        x: 620
+        y: 18
+        width: 34
+        height: 62
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71ec9da3a5f4cb5f0800000000000000
+      internalID: -739628989842600425
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jobert_11
+      rect:
+        serializedVersion: 2
+        x: 702
+        y: 16
+        width: 23
+        height: 68
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a291fa622c75f2600800000000000000
+      internalID: 445671379517249834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jobert_12
+      rect:
+        serializedVersion: 2
+        x: 746
+        y: 19
+        width: 23
+        height: 65
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: db7f8fdea423e0ec0800000000000000
+      internalID: -3598883754820962371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jobert_13
+      rect:
+        serializedVersion: 2
+        x: 817
+        y: 17
+        width: 24
+        height: 68
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bea80ed96011d6920800000000000000
+      internalID: 2985060848132721387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jobert_14
+      rect:
+        serializedVersion: 2
+        x: 853
+        y: 17
+        width: 27
+        height: 68
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d09b64d702d87d560800000000000000
+      internalID: 7338489288503769357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jobert_15
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 17
+        width: 31
+        height: 68
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 539b99da036800a80800000000000000
+      internalID: -8502648552846411467
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jobert_16
+      rect:
+        serializedVersion: 2
+        x: 930
+        y: 17
+        width: 24
+        height: 68
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3766eba4e0a40e600800000000000000
+      internalID: 495477384254744179
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jobert_17
+      rect:
+        serializedVersion: 2
+        x: 966
+        y: 17
+        width: 27
+        height: 68
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 939a8723c272653e0800000000000000
+      internalID: -2065420308323980999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jobert_18
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 17
+        width: 31
+        height: 68
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08296678bb04be190800000000000000
+      internalID: -7932175144508288384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

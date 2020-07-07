@@ -5,6 +5,7 @@ namespace Core
     /// <summary>
     /// Класс отвечающий за ориентацию в пространстве предметов
     /// </summary>
+    [System.Serializable]
     public class Orientation
     {
         public Orientation()

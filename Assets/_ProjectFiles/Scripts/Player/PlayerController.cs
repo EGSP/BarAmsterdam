@@ -155,8 +155,10 @@ namespace Player.Controllers
 
             Vector3 newPosition = transform.position;
 
-            int horObstacleExist = CheckObstacleByLinecast(transform.position + horizontalDir) == true ? 1 : 0;
-            int verObstacleExist = CheckObstacleByLinecast(transform.position + verticalDir) == true ? 1 : 0;
+            int horObstacleExist = 
+                CheckObstacleByLinecast(transform.position + horizontalDir) == true ? 1 : 0;
+            int verObstacleExist = 
+                CheckObstacleByLinecast(transform.position + verticalDir) == true ? 1 : 0;
 
             
             // Если не можем никуда пойти (true)
@@ -169,9 +171,12 @@ namespace Player.Controllers
 
             
             // Если можем идти по диагонали. Нет препятствий по бокам
-            if (horObstacleExist == 0 && verObstacleExist == 0 && (Mathf.Abs(horizontalInput) + Mathf.Abs(verticalInput)) == 2)
+            if (horObstacleExist == 0
+                &&  verObstacleExist == 0 
+                && (Mathf.Abs(horizontalInput) + Mathf.Abs(verticalInput)) == 2)
             {
-                bool diaObstacleExist = CheckObstacleByLinecast(transform.position + horizontalDir + verticalDir);
+                bool diaObstacleExist = 
+                    CheckObstacleByLinecast(transform.position + horizontalDir + verticalDir);
 
                 // Если в точке по диагонали нет препятствий
                 if (diaObstacleExist == false)
@@ -213,12 +218,17 @@ namespace Player.Controllers
             StartCoroutine(movementRoutine);
         }
 
+        /// <summary>
+        /// Движение без коллизии
+        /// </summary>
         public void MoveWithoutCollision(int horizontalInput, int verticalInput)
         {
-            LayerMask saveCollision = collisionMask;
-            collisionMask = ~1;
-            Move(horizontalInput, verticalInput);
-            collisionMask = saveCollision;
+            Vector3 newPosition = transform.position;
+            newPosition.x += horizontalInput * MoveStep;
+            newPosition.y += verticalInput * verticalStepModifier;
+            
+            movementRoutine = Movement(newPosition);
+            StartCoroutine(movementRoutine);
         }
 
         /// <summary>

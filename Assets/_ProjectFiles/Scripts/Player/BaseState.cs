@@ -187,8 +187,8 @@ namespace Player.PlayerStates
             var pointList = new List<Vector3>
             {
                 Player.transform.position + Player.ModifiedOrientation,
-                Player.transform.position+ Player.GetModifiedDirection(Vector3.up),
-                Player.transform.position + Player.GetModifiedDirection(Vector3.down)
+                Player.transform.position+ Player.GetModifiedDirection(Player.Orientation.LocalLeft),
+                Player.transform.position + Player.GetModifiedDirection(Player.Orientation.LocalRight)
             };
 
             for (var i = 0; i < pointList.Count; i++)

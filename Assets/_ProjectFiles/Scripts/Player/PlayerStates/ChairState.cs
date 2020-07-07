@@ -4,6 +4,7 @@ using Core;
 using Interiors;
 
 using Player.Controllers;
+using World;
 
 namespace Player.PlayerStates
 {
@@ -54,13 +55,13 @@ namespace Player.PlayerStates
         
         public override PlayerState Handle(UpdateData updateData)
         {
-            Debug.Log("chair hdl");
+            Debug.Log("chair handle");
             return this;
         }
         
         public override PlayerState Extra(UpdateData updateData)
         {
-            Debug.Log("chair xtra");
+            Debug.Log("chair extra");
             return this;
         }
 
@@ -76,6 +77,9 @@ namespace Player.PlayerStates
             {
                 if (hor * Chair.Orientation.Direction.x + ver * Chair.Orientation.Direction.y == 0)
                 {
+                    Player.transform.position = SceneGrid.Instance
+                        .GetNearestCellCentralized(Player.transform.position);
+                    
                     Player.MoveWithoutCollision(hor, ver);
                     
                     if (hor > 0)
@@ -83,11 +87,10 @@ namespace Player.PlayerStates
                         Player.SpriteRenderer.flipX = false;
                         Player.Animator.Play("MoveRight");
                     }
-                        
                     else if (hor < 0)
                     {
                         Player.SpriteRenderer.flipX = true;
-                        Player.Animator.Play("MoveRight");
+                        Player.Animator.Play("MoveLeft");
                     }
                     else if (ver > 0)
                     {
