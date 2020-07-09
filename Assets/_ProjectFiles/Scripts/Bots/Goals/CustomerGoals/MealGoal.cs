@@ -1,9 +1,11 @@
-﻿using Bots.Behaviours;
+﻿using System;
+using Bots.Behaviours;
 
 namespace Bots.Goals.CustomerGoals
 {
     public class MealGoal : CustomerGoal
     {
+        public override Type GoalType => typeof(MealGoal);
         public MealGoal(ICustomerBehaviour customer) : base(customer)
         {
         }

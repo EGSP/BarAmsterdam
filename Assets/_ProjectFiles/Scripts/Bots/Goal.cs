@@ -8,6 +8,8 @@ namespace Bots.Goals
     // Цель может циклить только в саму себя
     public abstract class Goal
     {
+        public virtual Type GoalType => typeof(Goal);
+        
         /// <summary>
         /// Следующая цель
         /// </summary>
@@ -33,7 +35,7 @@ namespace Bots.Goals
         }
 
         /// <summary>
-        /// Добавляет и возвращает цель провала
+        /// Добавляет цель провала и возвращает текущую цель
         /// </summary>
         /// <param name="goal"></param>
         /// <returns></returns>
@@ -44,7 +46,7 @@ namespace Bots.Goals
                 throw new ElementDefineException();
 
             FailedGoal = goal;
-            return FailedGoal;
+            return this;
         }
 
         /// <summary>
@@ -122,6 +124,14 @@ namespace Bots.Goals
             return oldNextGoal;
         }
 
+        /// <summary>
+        /// Первый вызов перед работой цели
+        /// </summary>
+        public virtual void Awake()
+        {
+            
+        }
+        
         /// <summary>
         /// Выполнение цели. Возвращает новую цель 
         /// </summary>

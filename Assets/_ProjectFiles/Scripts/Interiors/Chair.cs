@@ -19,11 +19,17 @@ namespace Interiors
         /// Сделал ли стул установку
         /// </summary>
         public bool IsSetuped { get; private set; }
+        
         /// <summary>
         /// Запрошен ли стул кем-то
         /// </summary>
-        public bool Requested { get; set; }
-        
+        public bool IsRequested { get; set; }
+
+        /// <summary>
+        /// Доступен ли стул
+        /// </summary>
+        public override bool CanInteract => !IsRequested;
+
         /// <summary>
         /// Серийный идентификатор или просто номер стула
         /// </summary>
@@ -39,7 +45,7 @@ namespace Interiors
         /// <summary>
         /// Привязан ли стул к столу
         /// </summary>
-        public bool HasTable => table == null;
+        public bool HasTable => table != null;
 
         /// <summary>
         /// Вызывается методом KickSitting, когда нужно выгнать сидящего

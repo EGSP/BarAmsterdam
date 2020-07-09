@@ -18,8 +18,19 @@
             // Проверяем наличие цели
             if (goal != null)
             {
+                var newGoal = goal.Execute(updateData);
+
+                if (newGoal == null)
+                    return;
+                    
+                // Если это новая цель
+                if (newGoal != goal)
+                {
+                    newGoal.Awake();
+                }
+                
                 // Меняем цель на новую
-                Parent.SetGoal(goal.Execute(updateData));
+                Parent.SetGoal(newGoal);
             }
         }
     }

@@ -16,8 +16,14 @@ namespace Interiors
         /// <summary>
         /// Идентификатор объекта окружения
         /// </summary>
-        public string ID { get => id; }
+        public string ID => id;
+
         [SerializeField] private string id;
+
+        /// <summary>
+        /// Можно ли взаимодействовать в данный момент. Изначально всегда true 
+        /// </summary>
+        public virtual bool CanInteract => true;
 
 
         /// <summary>

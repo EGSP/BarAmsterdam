@@ -530,7 +530,7 @@ namespace World
                     for (var i = 0; i < path.Count; i++)
                     {
                         var point = path[i];
-                        vectorizedPath.Add(new Vector3(point.X,point.Y));
+                        vectorizedPath.Add(baseGrid.GetCentralizedWorldPostion(point.X,point.Y));
                     }
 
                     return vectorizedPath;

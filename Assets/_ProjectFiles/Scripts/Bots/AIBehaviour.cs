@@ -1,4 +1,5 @@
-﻿using Bots.Goals;
+﻿using System;
+using Bots.Goals;
 using Bots.States;
 using UnityEngine;
 
@@ -10,16 +11,20 @@ namespace Bots
         /// Текущая цель
         /// </summary>
         public Goal CurrentGoal { get; private set; }
+
+        [SerializeField] private string goalType;
         
         /// <summary>
         /// Текущее состояние поведения
         /// </summary>
         public AiBehaviourState CurrentState { get; private set; }
 
+        public event Action<AiBehaviour> OnDestroyCall = delegate { };
+
 
         private AiUpdateData updateData;
         
-        private void Awake()
+        public void AwakeBehaviour()
         {
             updateData = new AiUpdateData();
             updateData.Parent = this;
@@ -27,9 +32,11 @@ namespace Bots
             ChangeState(new BaseBehaviourState(this));
         }
 
-        public void Update()
+        public void UpdateBehaviour(float deltaTime)
         {
-            updateData.DeltaTime = Time.deltaTime;
+            Debug.Log(CurrentGoal?.GoalType);
+            goalType = CurrentGoal?.GoalType.ToString();
+            updateData.DeltaTime = deltaTime;
             CurrentState.UpdateState(updateData);
         }
 
@@ -60,12 +67,17 @@ namespace Bots
         }
 
         /// <summary>
-        /// Добавляет новую цель в цепочку
+        /// Добавляет новую цель в цепочку. Возвращает новую цель
         /// </summary>
         /// <param name="nextGoal"></param>
-        public void AppendGoal(Goal nextGoal)
+        public Goal AppendGoal(Goal nextGoal)
         {
-            CurrentGoal.Append(nextGoal);
+            return CurrentGoal.Append(nextGoal);
+        }
+
+        public virtual void DestroyBehaviour()
+        {
+            OnDestroyCall(this);
         }
     }
 }

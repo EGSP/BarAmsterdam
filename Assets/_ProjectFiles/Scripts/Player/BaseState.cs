@@ -37,7 +37,7 @@ namespace Player.PlayerStates
                 
             // Ищем объект перед нами
             var interior = Player.GetComponentByLinecast<Interior>(pos);
-            if (interior != null)
+            if (interior != null && interior.CanInteract)
             {
                 return interior.GetPlayerState(Player).Awake();
             }
