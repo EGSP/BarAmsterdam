@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bots;
+using Bots.ActionObjects;
 using Bots.Behaviours;
 using Bots.Factory;
 using Gasanov.Exceptions;
@@ -10,12 +11,12 @@ using Gasanov.SpeedUtils;
 using Gasanov.SpeedUtils.RandomUtilities;
 using Gasanov.SpeedUtils.Time;
 using Interiors;
+using Items.Factory;
 using TMPro;
 using UnityEngine;
 
 namespace World
 {
-    [RequireComponent(typeof(FoodInfo))]
     public class Bar : MonoBehaviour
     {
         public static Bar Instance;
@@ -41,11 +42,6 @@ namespace World
         
         [Space(10)] [Header("Настройки объектов")] 
         [SerializeField] private Transform spawnPoint;
-        
-        /// <summary>
-        /// Информация по еде
-        /// </summary>
-        public FoodInfo FoodInformation { get; private set; }
         
         /// <summary>
         /// Все стулья бара
@@ -76,9 +72,8 @@ namespace World
             Instance = this;
             
             // ЕДА
-            FoodInformation = GetComponent<FoodInfo>();
-            if(FoodInformation == null)
-                throw new NullReferenceException();
+            FoodFactory.LoadFoodPrefabs();
+            OnProkeEvent += () => MakeRandomOrder(null);
             
             // БОТЫ
             CustomersFactory.LoadCustomersPrefabs();
@@ -126,6 +121,7 @@ namespace World
 
         private void TestFunction()
         {
+            var order = MakeRandomOrder(null);
         }
 
         private void UpdateText(TMP_Text text)
@@ -183,12 +179,12 @@ namespace World
                 if (isProked)
                 {
                     OnProkeEvent();
-                    Debug.LogAssertion($"Proked {modifiedChance.ToString(1)}" +
-                                       $" : {difficulty.ToString(1)}");
+                    // Debug.LogAssertion($"Proked {modifiedChance.ToString(1)}" +
+                    //                    $" : {difficulty.ToString(1)}");
                 }
                 else
                 {
-                    Debug.LogAssertion("Not proked");
+                    // Debug.LogAssertion("Not proked");
                 }
             }
         }
@@ -222,6 +218,23 @@ namespace World
 
             if (cust != null)
                 AddCustomer(cust);
+        }
+
+        /// <summary>
+        /// Создает случайный заказ. Может вернуть null
+        /// </summary>
+        public CustomerOrder MakeRandomOrder(ICustomerBehaviour customer)
+        {
+            var foodInfo = FoodFactory.GetRandomFood();
+
+            if (foodInfo == null)
+                return null;
+            
+            // 10 секунд ждет заказ клиент
+            var customerOrder = new CustomerOrder(customer, foodInfo, 10f );
+
+            Debug.Log($"Покупатель сделал заказ {foodInfo.Food.ID}");
+            return customerOrder;
         }
         
         /// --------------------- CHAIRS

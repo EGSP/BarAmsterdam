@@ -307,12 +307,12 @@ namespace Gasanov.SpeedUtils.FileManagement
                 var fileData =  File.ReadAllText(SaveFolder + additionalPath + fileName + SaveExtension);
 
                 var match = Regex.Match(fileData,
-                    $"({propertyName})\\s*:\\s*([-+]?[0-9]*\\,?[0-9]+)\\s*;");
+                    $"({propertyName})\\s*:\\s*([-+]?[0-9]*[\\,.]?[0-9]+)\\s*;");
 
                 // Проверка успеха поиска
                 if (match.Success)
                 {
-                    return ChangeType<T>(match.Groups[2].Value);
+                    return ChangeType<T>(match.Groups[2].Value.Replace('.',','));
                 }
                 else
                 {

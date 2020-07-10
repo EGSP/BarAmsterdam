@@ -14,7 +14,8 @@ namespace Items.MonoItems
         /// <summary>
         /// Идентификатор предмета
         /// </summary>
-        public virtual string ID { get => id; }
+        public virtual string ID => id;
+
         [SerializeField] protected string id;
         
 

@@ -92,8 +92,8 @@ namespace Interiors
                         table = tableTop;
                         Orientation.SetDirection(horizontal,vertical);
                         IsSetuped = true;
-                        Debug.Log($"{horizontal} : {vertical}");
-                        Debug.Log(Orientation.Direction);
+                        // Debug.Log($"{horizontal} : {vertical}");
+                        // Debug.Log(Orientation.Direction);
                         return;
                     }
                 }

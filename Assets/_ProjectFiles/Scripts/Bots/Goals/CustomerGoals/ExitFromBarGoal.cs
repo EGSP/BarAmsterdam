@@ -34,7 +34,7 @@ namespace Bots.Goals.CustomerGoals
                 path = CustomerBehaviour.Bar.GetPathToExit(CustomerBehaviour.Position);
                 if (path == null)
                 {
-                    Debug.Log("Бот не нашел выход и самоуничтожился");
+                    // Debug.Log("Бот не нашел выход и самоуничтожился");
                     CustomerBehaviour.Dispose();
                     return null;
                 }
@@ -46,12 +46,12 @@ namespace Bots.Goals.CustomerGoals
                 CustomerBehaviour.MoveTime, updateData.DeltaTime))
             {
                 
-                Debug.Log("Бот дошел до выхода и самоуничтожился");
+                // Debug.Log("Бот дошел до выхода и самоуничтожился");
                 CustomerBehaviour.Dispose();
                 return null;
             }
 
-            Debug.Log("Бот идет на выход");
+            // Debug.Log("Бот идет на выход");
             return this;
         }
         

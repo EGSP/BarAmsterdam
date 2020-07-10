@@ -18,7 +18,7 @@ namespace Bots.Goals
 
         public override Goal Execute(AiUpdateData updateData)
         {
-            Debug.Log("Бот идет");
+            // Debug.Log("Бот идет");
             if (Moveable.Path == null)
                 return FailedGoal;
 
@@ -29,7 +29,7 @@ namespace Bots.Goals
             if (GoalsUtils.MoveAlongPath(Moveable.Path, ref currentNode, Moveable.Transform,
                 Moveable.MoveTime, updateData.DeltaTime))
             {
-                Debug.Log("Бот успешно дошел");
+                // Debug.Log("Бот успешно дошел");
                 return NextGoal;
             }
             

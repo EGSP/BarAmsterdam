@@ -21,7 +21,7 @@ namespace Bots.Goals.CustomerGoals
 
                 if (chair == null)
                 {
-                    Debug.Log("Свободный стул не был найден");
+                    // Debug.Log("Свободный стул не был найден");
                     return FailedGoal;
                 }
             }
@@ -37,7 +37,7 @@ namespace Bots.Goals.CustomerGoals
                 
             Customer.RequestedChair = chair;
             Customer.Path = path;
-            Debug.Log("Путь до стула найден");
+            // Debug.Log("Путь до стула найден");
             return NextGoal;
            
         }

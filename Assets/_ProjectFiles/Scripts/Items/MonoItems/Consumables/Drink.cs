@@ -15,11 +15,6 @@ namespace Items.MonoItems.Consumables
             None
         }
 
-        public override string ID
-        {
-            get => id + DrinkType.ToString();
-        }
-
         /// <summary>
         /// Тип напитка
         /// </summary>

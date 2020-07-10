@@ -34,7 +34,7 @@ namespace Bots
 
         public void UpdateBehaviour(float deltaTime)
         {
-            Debug.Log(CurrentGoal?.GoalType);
+            // Debug.Log(CurrentGoal?.GoalType);
             goalType = CurrentGoal?.GoalType.ToString();
             updateData.DeltaTime = deltaTime;
             CurrentState.UpdateState(updateData);
