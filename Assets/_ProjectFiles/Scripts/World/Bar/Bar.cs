@@ -5,6 +5,7 @@ using Bots;
 using Bots.ActionObjects;
 using Bots.Behaviours;
 using Bots.Factory;
+using Core.ObjectPooling;
 using Gasanov.Exceptions;
 using Gasanov.Extensions;
 using Gasanov.SpeedUtils;
@@ -14,6 +15,7 @@ using Interiors;
 using Items.Factory;
 using TMPro;
 using UnityEngine;
+using World.BarElements;
 
 namespace World
 {
@@ -42,6 +44,8 @@ namespace World
         
         [Space(10)] [Header("Настройки объектов")] 
         [SerializeField] private Transform spawnPoint;
+
+        [SerializeField] private OrderNotify orderNotifyPrefab;
         
         /// <summary>
         /// Все стулья бара
@@ -53,6 +57,8 @@ namespace World
         /// Есть ли в баре хоть один свободный стул
         /// </summary>
         public bool FreeChairAvailable => !freeChairs.IsEmpty;
+
+        private SinglePoolContainer<OrderNotify> orderPool;
         
         /// <summary>
         /// Таймер дня
@@ -70,6 +76,9 @@ namespace World
                 throw new SingletonException<Bar>(this);
             
             Instance = this;
+            
+            // БАР
+            SetupBarElements();
             
             // ЕДА
             FoodFactory.LoadFoodPrefabs();
@@ -116,12 +125,17 @@ namespace World
             UpdateCustomers(deltaTime);
 
             if (timeOpacity < 1)
+            {
                 HandleProke(difficulty, deltaTime);
+            }
+            else
+            {
+                HandleTimeEnd(deltaTime);
+            }
         }
 
         private void TestFunction()
         {
-            var order = MakeRandomOrder(null);
         }
 
         private void UpdateText(TMP_Text text)
@@ -189,6 +203,11 @@ namespace World
             }
         }
 
+        private void HandleTimeEnd(float deltaTime)
+        {
+            
+        }
+
         /// --------------------CUSTOMERS
         
         private void AddCustomer(CustomerBehaviour customer)
@@ -232,12 +251,29 @@ namespace World
             
             // 10 секунд ждет заказ клиент
             var customerOrder = new CustomerOrder(customer, foodInfo, 10f );
-
-            Debug.Log($"Покупатель сделал заказ {foodInfo.Food.ID}");
+            
+            ShowOrderNotify(customerOrder);
             return customerOrder;
         }
+
+        public void ShowOrderNotify(CustomerOrder order)
+        {
+            if (order.Customer == null)
+                return;
+            
+            var custPos = order.Customer.Transform.position;
+
+            var orderNotify = orderPool.Take();
+
+            if (orderNotify == null)
+                return;
+
+            orderNotify.transform.position = custPos;
+            orderNotify.Text.text = order.FoodInfo.Food.ID;
+            order.OnCancelEvent += () => orderNotify.ReturnToPool();
+        }
         
-        /// --------------------- CHAIRS
+        /// --------------------- CHAIRS ------------------------
 
         /// <summary>
         /// Установка стульев. Стульям присваивается номер и выгоняются сидящие.
@@ -245,7 +281,7 @@ namespace World
         public void SetupChairs()
         {
             // Находим все стулья со столами
-            Chairs = FindObjectsOfType<Chair>().Where(x =>
+            Chairs = FindObjectsOfType<Chair>().Where((x) =>
             {
                x.Setup();
                return x.HasTable == true;
@@ -260,6 +296,25 @@ namespace World
                 chair.KickSitting();
                 chair.IsRequested = false;
             }
+        }
+        
+        // ----------------------- BAR --------------------------
+
+        private void SetupBarElements()
+        {
+            // Создаем префабы уведомлений
+            orderPool = SinglePoolContainer<OrderNotify>.CreateContainer("OrderNotify");
+            
+            var orderPoolGameObject = new GameObject("OrderPool [Pool]");
+            orderPoolGameObject.transform.parent = transform;
+            
+            orderPool.SetInitializator(10, (x) =>
+            {
+                var instance = Instantiate(orderNotifyPrefab);
+                instance.transform.parent = orderPoolGameObject.transform;
+                instance.gameObject.SetActive(false);
+                return instance;
+            });
         }
 
         /// <summary>

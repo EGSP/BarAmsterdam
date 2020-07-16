@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Bots.ActionObjects;
 using Interiors;
+using Items.MonoItems.Consumables;
 using UnityEngine;
 using World;
 
@@ -17,6 +19,16 @@ namespace Bots.Behaviours
         /// Запрошенный стул
         /// </summary>
         public Chair RequestedChair { get; set; }
+
+        /// <summary>
+        /// Текущий заказ
+        /// </summary>
+        public CustomerOrder Order { get; set; }
+
+        /// <summary>
+        /// Предмет заказа
+        /// </summary>
+        public Consumable OrderItem { get; set; }
 
         public Vector3 Position
         {

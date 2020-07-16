@@ -1,4 +1,5 @@
-﻿using Bots.Behaviours;
+﻿using System;
+using Bots.Behaviours;
 using Items.Factory;
 
 namespace Bots.ActionObjects
@@ -26,5 +27,12 @@ namespace Bots.ActionObjects
         /// Время ожидания заказа клиентом
         /// </summary>
         public float WaitingTime { get; set; }
+
+        public event Action OnCancelEvent = delegate {  };
+
+        public void Cancel()
+        {
+            OnCancelEvent();
+        }
     }
 }

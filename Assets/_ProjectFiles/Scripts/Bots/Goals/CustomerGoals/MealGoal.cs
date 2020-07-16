@@ -12,7 +12,25 @@ namespace Bots.Goals.CustomerGoals
 
         public override Goal Execute(AiUpdateData updateData)
         {
-            throw new System.NotImplementedException();
+            if (Customer.Order == null)
+                return FailedGoal;
+
+            if (Customer.OrderItem == null)
+                return CancleOrder();
+
+            var orderItem = Customer.OrderItem;
+            UnityEngine.GameObject.Destroy(orderItem.gameObject);
+            orderItem = null;
+            
+            Customer.Order.Cancel();
+
+            return NextGoal;
+        }
+        
+        private Goal CancleOrder()
+        {
+            Customer.Order.Cancel();
+            return FailedGoal;
         }
     }
 }

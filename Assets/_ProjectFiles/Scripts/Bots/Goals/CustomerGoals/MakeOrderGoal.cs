@@ -11,9 +11,27 @@ namespace Bots.Goals.CustomerGoals
         {
         }
 
+        public override void Awake()
+        {
+            Customer.Order = null;
+        }
+
         public override Goal Execute(AiUpdateData updateData)
         {
-            throw new System.NotImplementedException();
+            if (Customer.Order == null)
+            {
+                // Получаем случайный заказ
+                var order = Customer.Bar.MakeRandomOrder(Customer);
+
+                if (order == null)
+                    return FailedGoal;
+
+                Customer.Order = order;
+                return NextGoal;
+            }
+
+            // Уже есть заказ, значит цель выполнена
+            return NextGoal;
         }
     }
 }

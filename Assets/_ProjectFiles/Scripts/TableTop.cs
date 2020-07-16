@@ -139,6 +139,20 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
     }
 
     /// <summary>
+    /// Возвращает предмет указывающий на тот же объект, что и item. Может вернуть null.
+    /// Возвращенный предмет удаляется со стола
+    /// </summary>
+    public T TakeItemByReference<T>(IItem item) where T: class
+    {
+        var coincidence = places.FirstOrDefault(x => x.CurrentItem == item);
+
+        if (coincidence != null)
+            return TakeItem(coincidence) as T;
+
+        return null;
+    }
+
+    /// <summary>
     /// Получение ссылки на предмет
     /// </summary>
     protected virtual IItem PopTakeableItem(ItemPlace place)
@@ -181,17 +195,41 @@ public class TableTop : MonoBehaviour, ICursorEnumerable
     }
 
     /// <summary>
-    /// Возвращает ссылку на найденый по идентификатору предмет. Может вернуть NullItem.
+    /// Возвращает ссылку на найденый по идентификатору предмет. Может вернуть null.
     /// </summary>
-    /// <param name="itemID"></param>
-    public IItem FindItemByID(string itemID)
+    /// <param name="itemId"></param>
+    public IItem FindItemById(string itemId)
     {
-        var coincidence = places.FirstOrDefault(x => x.CurrentItem.ID == itemID);
+        var coincidence = places.FirstOrDefault(x => x.CurrentItem.ID == itemId);
 
         if (coincidence != null)
             return PopTakeableItem(coincidence);
 
-        return new NullItem();
+        return null;
+    }
+
+    /// <summary>
+    /// Поиск предмета по выражению и типу. Может вернуть null, если предмет не найден
+    /// </summary>
+    public T FindItemByExpression<T>(Func<T, bool> expression) where T: class
+    {
+        for (var i = 0; i < places.Count; i++)
+        {
+            if (places[i].CurrentItem != null)
+            {
+                var convertedItem = places[i].CurrentItem as T;
+                if (convertedItem != null)
+                {
+                    var success = expression(convertedItem);
+
+                    if (success)
+                        return convertedItem;
+                    
+                }
+            }
+        }
+
+        return null;
     }
 
     /// <summary>

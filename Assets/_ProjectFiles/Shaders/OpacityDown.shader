@@ -1,11 +1,11 @@
-﻿Shader "Unlit/LiquidHolder"
+﻿Shader "Unlit/OpacityDown"
 {
     Properties
     {
         [PerRendererData] _MainTex ("Texture", 2D) = "white" {}
-        _LiquidMap("LiquidMap", 2D) = "black"{}
-        _LiquidColor("LiquidColor",Color) = (1,0.5,0.1,1)
         _Opacity("Opacity",Range(0,1)) = 0
+        _BackColor("_BackColor", Color) = (0,0,0,1)
+        
     }
     SubShader
     {
@@ -18,8 +18,8 @@
 			"PreviewType"="Plane"
 			"CanUseSpriteAtlas"="True"
 		}
-
-		Cull Off
+		
+        Cull Off
 		Lighting Off
 		ZWrite Off
 		Blend SrcAlpha OneMinusSrcAlpha
@@ -41,20 +41,17 @@
             struct v2f
             {
                 float2 uv : TEXCOORD0;
+                UNITY_FOG_COORDS(1)
                 float4 vertex : SV_POSITION;
             };
-            
-            // Properties
-            sampler2D _MainTex;
-            sampler2D _LiquidMap;
-            
-            half4 _LiquidColor;
-            
-            half _Opacity;
-            
-            float4 _MainTex_ST;
 
-            // Functions 
+            sampler2D _MainTex;
+            float4 _MainTex_ST;
+            
+            fixed _Opacity;
+            
+            fixed4 _BackColor;
+
             v2f vert (appdata v)
             {
                 v2f o;
@@ -67,15 +64,15 @@
             {
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv);
-                half liquidMapAlpha = tex2D(_LiquidMap, i.uv).a;
-                half isLiquid = step(0.1,liquidMapAlpha*step(i.uv.y,_Opacity));
-                //return col = step(0.001,tex2D(_LiquidMap, i.uv).a);
-                // Apply color if liquid
-                half4 computedColor = (_LiquidColor*isLiquid);
-                col.rgb *= (1-isLiquid)+computedColor;
-                col.a = saturate(computedColor.a * liquidMapAlpha+col.a);
                 
-                return col;
+                fixed isBackground = step(_Opacity, i.uv.y);
+                fixed4 newBackColor = (_BackColor*isBackground);
+                fixed4 newForeColor = (col * (1-isBackground));
+                
+                fixed4 computedColor = newBackColor + newForeColor;
+                
+                computedColor.a = max(newBackColor,newForeColor);
+                return computedColor;
             }
             ENDCG
         }

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using Bots.ActionObjects;
 using Interiors;
+using Items.MonoItems.Consumables;
 using UnityEngine;
 using World;
 
@@ -23,6 +25,16 @@ namespace Bots.Behaviours
         /// Запрошенный стул
         /// </summary>
         Chair RequestedChair { get; set; }
+        
+        /// <summary>
+        /// Заказ в баре
+        /// </summary>
+        CustomerOrder Order { get; set; }
+
+        /// <summary>
+        /// Предмет полученный через заказ
+        /// </summary>
+        Consumable OrderItem { get; set; }
 
         void Dispose();
     }

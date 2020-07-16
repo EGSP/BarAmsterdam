@@ -68,13 +68,27 @@ namespace Bots.Factory
             var freeroamGoal = new MoveFreeroamGoal(customer);
             var exitGoal = new ExitFromBarGoal(customer);
             var moveToGoal = new MoveToPlaceGoal(customer);
-            moveToGoal.Join(exitGoal);
+            var makeOrderGoal = new MakeOrderGoal(customer);
+            var waitGoal = new WaitOrderGoal(customer);
+            var mealGoal = new MealGoal(customer);
             
             findGoal.JoinFailed(freeroamGoal);
             findGoal.Join(moveToGoal);
             
             freeroamGoal.JoinFailed(exitGoal);
             freeroamGoal.Join(findGoal);
+            
+            moveToGoal.Join(makeOrderGoal);
+            moveToGoal.JoinFailed(exitGoal);
+
+            makeOrderGoal.Join(waitGoal);
+            makeOrderGoal.JoinFailed(exitGoal);
+
+            waitGoal.Join(mealGoal);
+            waitGoal.JoinFailed(exitGoal);
+
+            mealGoal.Join(exitGoal);
+            mealGoal.JoinFailed(exitGoal);
             
             customer.SetGoal(findGoal);
             customer.OnDestroyCall += DestroyBehaviour;

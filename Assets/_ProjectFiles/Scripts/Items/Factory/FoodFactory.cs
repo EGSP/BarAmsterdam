@@ -11,9 +11,9 @@ namespace Items.Factory
 {
     public static class FoodFactory
     {
-        // ЭТО КОД ИЗ СТАРОГО FOODINFO
-
+        
         public static readonly string DataPath = "Consumables/";
+        
         static FoodFactory()
         {
             _foodInfos = new List<FoodInfo>();
@@ -30,6 +30,16 @@ namespace Items.Factory
         {
             if (IsPrefabsLoaded && !reload)
                 return;
+
+            if (reload)
+            {
+                for (var i = 0; i < _foodInfos.Count; i++)
+                {
+                    Resources.UnloadAsset(_foodInfos[i].Food);
+                }
+                
+                _foodInfos = new List<FoodInfo>();
+            }
             
             var consumablesPrefabs = Resources.LoadAll(path, typeof(Consumable))
                 .Cast<Consumable>().ToList();
@@ -54,10 +64,39 @@ namespace Items.Factory
         /// <returns></returns>
         public static FoodInfo GetRandomFood()
         {
-            if(!IsPrefabsLoaded)
-                LoadFoodPrefabs();
+            LoadFoodPrefabs();
             
             return RandomUtils.SelectByWeight(_foodInfos, x => x.ChanceToOrder);
+        }
+
+        /// <summary>
+        /// Возвращает еду по идентификатору. Может вернуть null.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static FoodInfo GetFoodById(string id)
+        {
+            LoadFoodPrefabs();
+
+            var coincidence = _foodInfos.FirstOrDefault(x => x.Food.ID == id);
+
+            return coincidence;
+        }
+
+        /// <summary>
+        /// Возвращает еду по идентификатору и Типу. Может вернуть null.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static FoodInfo GetFoodById<T>(string id) where T: Consumable
+        {
+            LoadFoodPrefabs();
+            
+            var coincidence = _foodInfos.FirstOrDefault(x => 
+                x.Food.ID == id && (x.Food as T) != null);
+
+            return coincidence;
         }
         
         

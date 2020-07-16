@@ -1,47 +1,47 @@
 using System.Collections;
 using System;
 using System.Collections.Generic;
-
+using Core;
 using Player.Controllers;
 using Player.PlayerCursors;
 using Player.PlayerStates;
 using UnityEngine;
 
 using Items;
+using Items.Factory;
 using Items.MonoItems;
+using Items.MonoItems.Consumables;
 
 namespace Interiors
 {
     public class DrinkCabinet : TableTop
     {
-        [SerializeField] private Bottle bottlePrefab;
-        
-        /// <summary>
-        /// Ориентация по вертикали от -1 до 1
-        /// </summary>
-        public int verOrientation { get; private set; } = -1;
+        public string drinkId;
 
-        /// <summary>
-        /// Ориентация по горизонтали от -1 до 1
-        /// </summary>
-        public int horOrientation { get; private set; } = 0;
+        private Drink drinkpPrefab;
+
+        private void Awake()
+        {
+            var prefabInfo = FoodFactory.GetFoodById<Drink>(drinkId);
+            if (prefabInfo == null)
+                return;
+
+            drinkpPrefab = prefabInfo.Food as Drink;
+        }
 
         public override IItem TakeItemByDistance(Vector3 initiatorPosition)
         {
-            Debug.Log(initiatorPosition - transform.position == new Vector3(horOrientation, verOrientation * 0.5f, 0));
-            var bottle = Instantiate(bottlePrefab, new Vector3(0,0,0), Quaternion.identity);
-            // var bottle = Instantiate(drink, new Vector3(0,0,0), Quaternion.identity);
-            Debug.Log("bottle");
-            Debug.Log(bottle);
-            // bottle.transform.parent = playerController.transform;
-
+            if (drinkpPrefab == null)
+                return null;
+            
+            var bottle = Instantiate(drinkpPrefab, new Vector3(0,0,0), Quaternion.identity);
+            
             return bottle;
-            // return new BaseState(playerController);
         }
 
         public bool CompareBottles(Bottle bottle)
         {
-            if (bottle.IsFull && bottlePrefab.DrinkType == bottle.DrinkType)
+            if (bottle.IsFull && drinkpPrefab.DrinkType == bottle.DrinkType)
                 return true;
 
             return false;
